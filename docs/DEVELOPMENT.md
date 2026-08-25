@@ -4,7 +4,7 @@ Esta guía está dirigida a quienes quieran modificar el producto. Los usuarios 
 
 ## Requisitos
 
-- Node.js 20 o superior
+- Node.js 20 o superior; CI utiliza Node.js 24
 - npm
 - Chromium para el recorrido Playwright
 
