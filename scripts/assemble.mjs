@@ -1,7 +1,7 @@
 // scripts/assemble.mjs — Concatenate modules into single drop-in HTML (no bundler)
 // Reads modules in order per 07-assemble.md, replaces island with example state, injects classic scripts + bootstrap.
 
-import { readFileSync, writeFileSync, statSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -285,6 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
 `;
   html = html.replace('<!DOCTYPE html>', '<!DOCTYPE html>\n' + headerComment);
 
+  mkdirSync(path.dirname(distPath), { recursive: true });
   writeFileSync(outPath, html, 'utf-8');
   writeFileSync(distPath, html, 'utf-8');
   writeFileSync(portablePath, html, 'utf-8');
