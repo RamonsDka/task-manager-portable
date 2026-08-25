@@ -12,14 +12,11 @@ import { Window } from 'happy-dom';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
 const skeletonPath = path.join(projectRoot, 'modules', '01-skeleton.html');
-const prototypePath = path.join(projectRoot, 'project-tracking-dashboard', 'index.html');
+const architecturePath = path.join(projectRoot, 'docs', 'ARCHITECTURE.md');
+const customizationPath = path.join(projectRoot, 'docs', 'CUSTOMIZATION.md');
 
 function readSkeleton() {
   return readFileSync(skeletonPath, 'utf-8');
-}
-
-function readPrototype() {
-  return readFileSync(prototypePath, 'utf-8');
 }
 
 // Extract :root block for token comparison
@@ -66,16 +63,13 @@ describe('skeleton shell — file:// portability & tokens', () => {
     assert.equal(html.includes('<link rel="stylesheet"'), false, 'no external stylesheet link');
   });
 
-  it('contains verbatim :root tokens from prototype (dark theme)', () => {
+  it('contains the locked :root token contract for the dark theme', () => {
     const skeleton = readSkeleton();
-    const proto = readPrototype();
-    const protoRoot = extractRootCss(proto);
     const skeletonRoot = extractRootCss(skeleton);
 
-    assert.notEqual(protoRoot, '', 'prototype must have :root');
     assert.notEqual(skeletonRoot, '', 'skeleton must have :root');
 
-    // Verbatim tokens — check key variables exactly match prototype values
+    // Locked public token contract — these values define the distributed theme.
     const requiredTokens = [
       '--bg-canvas: #0b0e14',
       '--bg-surface-primary: #161b22',
@@ -104,7 +98,6 @@ describe('skeleton shell — file:// portability & tokens', () => {
 
     for (const token of requiredTokens) {
       assert.equal(skeleton.includes(token), true, `skeleton must contain token ${token}`);
-      assert.equal(proto.includes(token), true, `prototype must contain token ${token} (reference)`);
     }
 
     // Dark theme: body background must reference --bg-canvas or be #0b0e14
@@ -456,21 +449,23 @@ describe('skeleton shell — file:// portability & tokens', () => {
     assert.match(html, /\.custom-checkbox\s*\{[^}]*pointer-events:\s*none/s, 'read-only checkbox must not advertise an interactive target');
   });
 
-  it('uses technical Spanish shell copy and documents token, contrast, and ownership parity', () => {
+  it('uses technical Spanish shell copy and documents architecture and state ownership publicly', () => {
     const html = readSkeleton();
-    const design = readFileSync(path.join(projectRoot, 'DESIGN.md'), 'utf-8');
+    const architecture = readFileSync(architecturePath, 'utf-8');
+    const customization = readFileSync(customizationPath, 'utf-8');
     for (const label of ['Texto', 'Estado', 'Responsable', 'Etiqueta', 'Fase', 'Todos', 'Activas', 'Completadas', 'En curso', 'Pendientes', 'Bloqueadas', 'Restablecer', 'visibles', 'No se encontraron tareas coincidentes']) {
       assert.equal(html.includes(label), true, 'shell must include Spanish label: ' + label);
     }
     for (const legacyLabel of ['>Text<', '>Status<', '>Owner<', '>Tag<', '>Phase<', '>Reset<', 'No matching tasks found']) {
       assert.equal(html.includes(legacyLabel), false, 'legacy English shell label must be absent: ' + legacyLabel);
     }
-    const cssTokens = [['--bg-canvas', '#0b0e14'], ['--bg-surface-primary', '#161b22'], ['--text-primary', '#ffffff'], ['--text-secondary', '#a0a0a0'], ['--border-focus', '#58a6ff'], ['--accent-green', '#3fb950'], ['--accent-red', '#f85149']];
-    for (const [name, value] of cssTokens) assert.match(design, new RegExp(name + '[\\s\\S]{0,80}' + value), 'DESIGN.md must document current token ' + name);
-    assert.match(design, /Overview 1, Phases 2, Kanban 3, Codegraph 4, Tree 5, Git 6, Help 7/);
-    assert.match(design, /Task notes: 3-line preview/);
-    assert.match(design, /Codegraph details: 4-line preview/);
-    assert.match(design, /44×44 CSS px/);
+    assert.match(architecture, /#tm-state JSON/);
+    assert.match(architecture, /Cero dependencias runtime/);
+    assert.match(architecture, /navegación por teclado/);
+    assert.match(architecture, /diálogos nativos con restauración de foco/);
+    assert.match(customization, /única fuente de verdad/);
+    assert.match(customization, /schemaVersion/);
+    assert.equal(customization.includes(".replace(/<\\/script>/gi, '\\\\u003c/script\\\\u003e')"), true);
   });
 
   it('calculates token contrast for text and dual-encoded status colors', () => {
