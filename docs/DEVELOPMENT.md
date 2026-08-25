@@ -18,7 +18,7 @@ npm install
 
 | Comando | Propósito |
 |---|---|
-| `npm test` | Ejecuta la suite Node con happy-dom |
+| `npm test` | Ejecuta la suite Node con happy-dom mediante una ruta multiplataforma |
 | `npm run check` | Comprueba JavaScript mediante TypeScript checkJs |
 | `npm run assemble` | Genera el HTML desde los módulos |
 | `npm run test:browser` | Ejecuta el recorrido real de Playwright |
