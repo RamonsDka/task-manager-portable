@@ -1,0 +1,45 @@
+name: Reporte de error
+description: Informa un comportamiento reproducible de Task Manager Portable.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Gracias por ayudar a mejorar el proyecto. No incluyas secretos en el issue.
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción
+      description: ¿Qué ocurrió y qué esperabas?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. Abrir...
+        2. Seleccionar...
+        3. Observar...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador y versión
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia adicional
+      description: Capturas, consola o fragmento mínimo del estado sin datos sensibles.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmaciones
+      options:
+        - label: Eliminé secretos y datos privados del ejemplo.
+          required: true
+        - label: Busqué issues existentes antes de crear este reporte.
+          required: true

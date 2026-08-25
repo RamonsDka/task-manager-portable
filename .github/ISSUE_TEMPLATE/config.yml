@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reportar una vulnerabilidad
+    url: https://github.com/RamonsDka/task-manager-portable/security/advisories/new
+    about: Utiliza un canal privado para vulnerabilidades de seguridad.

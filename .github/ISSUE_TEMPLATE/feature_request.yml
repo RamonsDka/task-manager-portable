@@ -1,0 +1,31 @@
+name: Solicitud de mejora
+description: Propón una mejora compatible con el enfoque offline y de archivo único.
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: ¿Qué necesidad no está resuelta actualmente?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Resultado esperado
+      description: Describe el comportamiento observable, no solo una implementación.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Restricciones y alternativas
+      description: ¿Cómo preservaría un solo HTML, file:// y cero dependencias runtime?
+  - type: checkboxes
+    id: alignment
+    attributes:
+      label: Alineación
+      options:
+        - label: La propuesta mantiene el panel informativo y offline.
+          required: true
