@@ -194,7 +194,7 @@ describe('todo-help — help shows copy/AI-update/schema + AI-instructions; labe
     const { document } = mountWithTodoHelp(state);
     const help = document.getElementById('help-panel');
     const text = help.textContent;
-    assert.equal(text.includes('drop-in-task-manager.html') || text.includes('drop-in'), true);
+    assert.equal(text.includes('Task-Manager-Portable.html') || text.includes('drop-in'), true);
     assert.equal(text.includes('file://'), true);
     assert.equal(text.includes('Doble clic') || text.includes('doble clic') || text.includes('Copiar'), true);
   });
