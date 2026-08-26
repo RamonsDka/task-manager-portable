@@ -2,6 +2,13 @@
 
 Todos los cambios relevantes se documentan en este archivo siguiendo [Keep a Changelog](https://keepachangelog.com/) y versionado semántico.
 
+## [1.0.1] - 2026-08-25
+
+### Fixed
+
+- Clarificado el nombre del artefacto portable en el prompt del panel de ayuda (?) y en la documentación técnica para apuntar consistentemente a `Task-Manager-Portable.html` (#1).
+- Actualizado el contrato de la skill y los paquetes de distribución para priorizar `Task-Manager-Portable.html` manteniendo compatibilidad con `drop-in-task-manager.html`.
+
 ## [1.0.0] - 2026-08-25
 
 ### Added
