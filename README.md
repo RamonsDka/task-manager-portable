@@ -135,6 +135,8 @@ Reglas:
 
 La guía completa está en [`docs/AI-ORCHESTRATOR-GUIDE.md`](docs/AI-ORCHESTRATOR-GUIDE.md).
 
+> **Nota sobre el nombre del archivo:** Si descargaste el archivo desde Releases o lo copiaste a tu proyecto, el archivo a mantener es `Task-Manager-Portable.html`. El archivo `drop-in-task-manager.html` es un artefacto de desarrollo interno/ensamblado generado en este repositorio.
+
 ## Estructura del repositorio
 
 ```text
