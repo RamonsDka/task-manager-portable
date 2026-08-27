@@ -1,6 +1,6 @@
 {
   "name": "task-manager-portable",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Single-file offline project dashboard with zero runtime dependencies",

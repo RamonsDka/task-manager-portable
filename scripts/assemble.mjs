@@ -22,7 +22,7 @@ const exampleState = {
   schemaVersion: '1.0',
   meta: {
     projectName: 'Task Manager Portable',
-    version: '1.0.1',
+    version: '1.1.0',
     branch: 'main',
     commit: '2faddaa',
     syncStatus: 'Sincronizado',
