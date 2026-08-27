@@ -39,7 +39,7 @@ function mountWithPanels(state) {
 }
 
 function panelFixture() {
-  return '<section id="git-details-panel"><div class="panel-body"></div></section><div id="full-git-mount"></div><section id="project-structure-panel"><div class="panel-body"></div></section><div id="full-tree-mount"></div><section id="codegraph-panel"><div class="panel-body"></div></section><dialog id="codegraph-dialog"><h2 id="codegraph-dialog-title"></h2><p id="codegraph-dialog-description"></p><div id="codegraph-dialog-content"></div><button type="button" data-codegraph-close>Cerrar</button></dialog>';
+  return '<section id="git-details-panel"><div class="panel-body"></div></section><div id="full-git-mount"></div><section id="project-structure-panel"><div class="panel-body"></div></section><div id="full-tree-mount"></div><section id="codegraph-panel"><div class="panel-body"></div></section><dialog id="codegraph-dialog"><h2 id="codegraph-dialog-title"></h2><p id="codegraph-dialog-description"></p><div id="codegraph-dialog-content"></div><button type="button" data-codegraph-close>Cerrar</button></dialog><dialog id="git-detail-dialog"><span id="git-detail-hash"></span><span id="git-detail-kind"></span><div id="git-detail-msg"></div><strong id="git-detail-branch"></strong><code id="git-detail-full-hash"></code><span id="git-detail-sync"></span><button type="button" data-git-close>Cerrar</button></dialog>';
 }
 
 describe('panels — file existence and portability', () => {
@@ -173,8 +173,10 @@ describe('panels — git snapshot verbatim, zero runtime calls; tree depth; code
     const body = document.getElementById('codegraph-panel').querySelector('.panel-body');
     const svg = body.querySelector('svg.codegraph-svg');
     assert.notEqual(svg, null, 'SVG should exist');
-    const circles = svg.querySelectorAll('circle');
-    assert.equal(circles.length, 2, 'should have 2 node circles');
+    const nodes = svg.querySelectorAll('g.graph-node');
+    assert.equal(nodes.length, 2, 'should have 2 nodes');
+    const nodeBgs = svg.querySelectorAll('circle.node-bg');
+    assert.equal(nodeBgs.length, 2, 'should have 2 node circles');
     const paths = svg.querySelectorAll('path.graph-edge');
     assert.equal(paths.length, 1, 'should have 1 curved edge path');
     const legend = body.querySelector('.graph-legend');
@@ -284,5 +286,32 @@ describe('panels — wrong-type tree contained, core unaffected', () => {
     const svg = body.querySelector('svg');
     assert.notEqual(svg, null);
     // Should not throw
+  });
+
+  it('opens detailed git commit dialog on commit event click and closes cleanly', () => {
+    const state = createState({
+      meta: { features: { git: true }, branch: 'main' },
+      git: {
+        branch: 'main',
+        syncStatus: 'Sincronizado',
+        commits: [{ hash: 'a1b2c3d4e5f6', message: 'feat: esqueleto base + tokens' }]
+      }
+    });
+    const { document } = mountWithPanels(state);
+
+    const dialog = document.getElementById('git-detail-dialog');
+    assert.notEqual(dialog, null, 'git detail dialog must exist');
+
+    const gitCard = document.querySelector('.git-event-card');
+    assert.notEqual(gitCard, null);
+    gitCard.click();
+
+    assert.equal(dialog.dataset.open, 'true');
+    assert.equal(dialog.querySelector('#git-detail-hash').textContent, 'a1b2c3d');
+    assert.match(dialog.querySelector('#git-detail-msg').textContent, /esqueleto base/);
+    assert.equal(dialog.querySelector('#git-detail-branch').textContent, 'main');
+
+    dialog.querySelector('[data-git-close]').click();
+    assert.equal(dialog.dataset.open, 'false');
   });
 });

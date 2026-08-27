@@ -10,8 +10,6 @@
 ./Task-Manager-Portable.html   (en la raíz del proyecto donde fue copiado)
 ```
 
-> **Nota para IAs:** El artefacto oficial portable para usuarios finales y proyectos es `Task-Manager-Portable.html`. Si en un repositorio de desarrollo encuentras `drop-in-task-manager.html`, este último es la salida de ensamblado interno. La IA debe priorizar `Task-Manager-Portable.html` y soportar `drop-in-task-manager.html` si está presente.
-
 Siempre en `file://` — sin servidor, sin build. El usuario lo abre con doble clic.
 
 ---

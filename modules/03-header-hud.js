@@ -200,7 +200,10 @@
     if (dialog.getAttribute('data-overview-dialog-bound') !== '1') {
       dialog.setAttribute('data-overview-dialog-bound', '1');
       dialog.querySelector('[data-overview-close]').addEventListener('click', function () { closeOverviewDetailDialog(doc); });
-      dialog.querySelector('[data-overview-view-section]').addEventListener('click', function () { var target = this.getAttribute('data-target-view'); closeOverviewDetailDialog(doc); var tab = doc.querySelector('.tab-btn[data-target-view="' + target + '"]'); if (tab) tab.click(); });
+      dialog.addEventListener('click', function (event) {
+        if (event.target === dialog) closeOverviewDetailDialog(doc);
+      });
+      dialog.querySelector('[data-overview-view-section]').addEventListener('click', function () { var target = this.getAttribute('data-target-view'); closeOverviewDetailDialog(doc); var tab = doc.querySelector('.tab-btn[data-target-view=\"' + target + '\"]'); if (tab) tab.click(); });
       dialog.addEventListener('cancel', function (event) { event.preventDefault(); closeOverviewDetailDialog(doc); });
       dialog.addEventListener('keydown', function (event) {
         if (event.key !== 'Tab' || dialog.dataset.open !== 'true') return;
@@ -219,6 +222,219 @@
       return state.meta.labels.es[key];
     }
     return fallback;
+  }
+
+  // Active clock interval ticker reference
+  var _clockTicker = null;
+
+  function padZero(num) {
+    var s = String(num);
+    return s.length < 2 ? '0' + s : s;
+  }
+
+  function getLocalTimezoneName() {
+    try {
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz) {
+        var parts = tz.split('/');
+        return parts[parts.length - 1].replace(/_/g, ' ').toUpperCase();
+      }
+    } catch (_) {}
+    return 'LOCAL';
+  }
+
+  function formatRelativeTime(date) {
+    if (!date || isNaN(date.getTime())) return 'Recientemente';
+    var now = new Date();
+    var diffMs = now.getTime() - date.getTime();
+    if (diffMs < 0) diffMs = 0;
+    var diffSec = Math.floor(diffMs / 1000);
+    var diffMin = Math.floor(diffSec / 60);
+    var diffHr = Math.floor(diffMin / 60);
+    var diffDays = Math.floor(diffHr / 24);
+
+    if (diffSec < 45) return 'Hace un momento';
+    if (diffMin < 60) return 'Hace ' + (diffMin <= 1 ? '1 minuto' : diffMin + ' minutos');
+    if (diffHr < 24) return 'Hace ' + (diffHr <= 1 ? '1 hora' : diffHr + ' horas');
+    if (diffDays < 30) return 'Hace ' + (diffDays <= 1 ? '1 día' : diffDays + ' días');
+    return date.toLocaleDateString();
+  }
+
+  function updateClockDisplay(doc, is24h) {
+    if (!doc) return;
+    var now = new Date();
+    var hours = now.getHours();
+    var minutes = now.getMinutes();
+    var seconds = now.getSeconds();
+    var period = '';
+
+    if (!is24h) {
+      period = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 becomes 12
+    }
+
+    var hoursStr = padZero(hours);
+    var minStr = padZero(minutes);
+    var secStr = padZero(seconds);
+
+    var elHours = doc.getElementById('clock-hours');
+    var elMinutes = doc.getElementById('clock-minutes');
+    var elSeconds = doc.getElementById('clock-seconds');
+    var elPeriod = doc.getElementById('clock-period');
+    var elDate = doc.getElementById('clock-date');
+    var elTz = doc.getElementById('clock-timezone');
+    var clockCard = doc.getElementById('tm-digital-clock');
+    var formatTag = doc.getElementById('clock-format-tag');
+
+    if (elHours) elHours.textContent = hoursStr;
+    if (elMinutes) elMinutes.textContent = minStr;
+    if (elSeconds) elSeconds.textContent = secStr;
+    if (elPeriod) {
+      elPeriod.textContent = period;
+      elPeriod.style.display = is24h ? 'none' : 'inline-block';
+    }
+    if (formatTag) formatTag.textContent = is24h ? '24H' : '12H';
+    if (clockCard) clockCard.setAttribute('data-clock-format', is24h ? '24h' : '12h');
+
+    if (elDate) {
+      try {
+        var options = { weekday: 'short', month: 'short', day: 'numeric' };
+        var dateFormatted = now.toLocaleDateString(undefined, options);
+        // Capitalize first letter
+        if (dateFormatted) {
+          dateFormatted = dateFormatted.charAt(0).toUpperCase() + dateFormatted.slice(1);
+        }
+        elDate.textContent = dateFormatted || now.toDateString();
+      } catch (_) {
+        elDate.textContent = now.toDateString();
+      }
+    }
+
+    if (elTz && (!elTz.textContent || elTz.textContent === 'LOCAL')) {
+      elTz.textContent = getLocalTimezoneName();
+    }
+  }
+
+  function resolveLastUpdatedDate(state, doc) {
+    var dates = [];
+    // Check doc.lastModified (reflects actual file on disk modification)
+    try {
+      if (doc && doc.lastModified) {
+        var dMod = new Date(doc.lastModified);
+        if (!isNaN(dMod.getTime()) && dMod.getFullYear() > 2020) dates.push(dMod);
+      }
+    } catch (_) {}
+
+    // Check meta.lastUpdated or meta.updatedAt
+    if (state && state.meta) {
+      if (state.meta.lastUpdated) {
+        var d1 = new Date(state.meta.lastUpdated);
+        if (!isNaN(d1.getTime())) dates.push(d1);
+      }
+      if (state.meta.updatedAt) {
+        var d2 = new Date(state.meta.updatedAt);
+        if (!isNaN(d2.getTime())) dates.push(d2);
+      }
+    }
+
+    // Check history items
+    if (state && state.meta && Array.isArray(state.meta.history) && state.meta.history.length) {
+      var latestHist = state.meta.history[state.meta.history.length - 1];
+      if (latestHist && latestHist.timestamp) {
+        var dHist = new Date(latestHist.timestamp);
+        if (!isNaN(dHist.getTime())) dates.push(dHist);
+      }
+    }
+
+    if (dates.length) {
+      dates.sort(function (a, b) { return b.getTime() - a.getTime(); });
+      return dates[0];
+    }
+    return new Date();
+  }
+
+  function renderHarness(state, doc) {
+    if (!doc) return;
+    var nameEl = doc.getElementById('harness-name');
+    var roleEl = doc.getElementById('harness-role');
+    var iconWrap = doc.getElementById('harness-icon');
+    if (!nameEl) return;
+
+    var harness = (state && state.meta && state.meta.harness) || 'OpenCode';
+    var role = (state && state.meta && state.meta.harnessRole) || 'Autonomous Multi-Agent';
+
+    nameEl.textContent = harness;
+    if (roleEl) roleEl.textContent = role;
+
+    if (iconWrap) {
+      if (/claude/i.test(harness)) {
+        iconWrap.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="#D97757"><path d="M20.998 10.949H24v3.102h-3v3.028h-1.487V20H18v-2.921h-1.487V20H15v-2.921H9V20H7.488v-2.921H6V20H4.487v-2.921H3V14.05H0V10.95h3V5h17.998v5.949zM6 10.949h1.488V8.102H6v2.847zm10.51 0H18V8.102h-1.49v2.847z"/></svg>';
+      } else if (/codex|openai/i.test(harness)) {
+        iconWrap.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8.086.457a6.105 6.105 0 013.046-.415c1.333.153 2.521.72 3.564 1.7a.117.117 0 00.107.029c1.408-.346 2.762-.224 4.061.366l.063.03.154.076c1.357.703 2.33 1.77 2.918 3.198.278.679.418 1.388.421 2.126a5.655 5.655 0 01-.18 1.631.167.167 0 00.04.155 5.982 5.982 0 011.578 2.891c.385 1.901-.01 3.615-1.183 5.14l-.182.22a6.063 6.063 0 01-2.934 1.851.162.162 0 00-.108.102c-.255.736-.511 1.364-.987 1.992-1.199 1.582-2.962 2.462-4.948 2.451-1.583-.008-2.986-.587-4.21-1.736a.145.145 0 00-.14-.032c-.518.167-1.04.191-1.604.185a5.924 5.924 0 01-2.595-.622 6.058 6.058 0 01-2.146-1.781c-.203-.269-.404-.522-.551-.821a7.74 7.74 0 01-.495-1.283 6.11 6.11 0 01-.017-3.064.166.166 0 00.008-.074.115.115 0 00-.037-.064 5.958 5.958 0 01-1.38-2.202 5.196 5.196 0 01-.333-1.589 6.915 6.915 0 01.188-2.132c.45-1.484 1.309-2.648 2.577-3.493.282-.188.55-.334.802-.438.286-.12.573-.22.861-.304a.129.129 0 00.087-.087A6.016 6.016 0 015.635 2.31C6.315 1.464 7.132.846 8.086.457z"/></svg>';
+      } else {
+        iconWrap.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>';
+      }
+    }
+  }
+
+  function renderLastUpdate(state, doc) {
+    if (!doc) return;
+    var elRel = doc.getElementById('last-update-relative');
+    var elExact = doc.getElementById('last-update-exact');
+    if (!elRel && !elExact) return;
+
+    var date = resolveLastUpdatedDate(state, doc);
+    if (elRel) {
+      elRel.textContent = formatRelativeTime(date);
+    }
+    if (elExact) {
+      try {
+        var timeStr = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        var dateStr = date.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
+        elExact.textContent = dateStr + ' ' + timeStr;
+      } catch (_) {
+        elExact.textContent = date.toLocaleString();
+      }
+    }
+  }
+
+  function initDigitalClock(doc) {
+    if (!doc) return;
+    var clockCard = doc.getElementById('tm-digital-clock');
+    if (!clockCard) return;
+
+    var toggleBtn = doc.getElementById('btn-clock-toggle-format');
+    var is24h = clockCard.getAttribute('data-clock-format') === '24h';
+
+    // Immediate first tick
+    updateClockDisplay(doc, is24h);
+
+    if (toggleBtn && toggleBtn.getAttribute('data-clock-bound') !== '1') {
+      toggleBtn.setAttribute('data-clock-bound', '1');
+      toggleBtn.addEventListener('click', function () {
+        var currentFmt = clockCard.getAttribute('data-clock-format');
+        var nextIs24h = currentFmt !== '24h';
+        clockCard.setAttribute('data-clock-format', nextIs24h ? '24h' : '12h');
+        updateClockDisplay(doc, nextIs24h);
+      });
+    }
+
+    // Set interval once if in real browser environment
+    if (typeof setInterval === 'function' && !_clockTicker) {
+      _clockTicker = setInterval(function () {
+        if (!doc.defaultView || !doc.getElementById('tm-digital-clock')) {
+          clearInterval(_clockTicker);
+          _clockTicker = null;
+          return;
+        }
+        var fmt = clockCard.getAttribute('data-clock-format') === '24h';
+        updateClockDisplay(doc, fmt);
+      }, 1000);
+      if (_clockTicker && typeof _clockTicker.unref === 'function') {
+        _clockTicker.unref();
+      }
+    }
   }
 
   /**
@@ -243,7 +459,7 @@
         spans[1].textContent = versionRaw ? 'v' + versionRaw.replace(/^v/, '') : '';
         spans[1].style.display = versionRaw ? '' : 'none';
       } else {
-        titleEl.innerHTML = '<span>' + esc(nameRaw) + '</span> ' + (versionRaw ? '<span class="badge">v' + esc(versionRaw.replace(/^v/, '')) + '</span>' : '');
+        titleEl.innerHTML = '<span>' + esc(nameRaw) + '</span> ' + (versionRaw ? '<span class=\"badge\">v' + esc(versionRaw.replace(/^v/, '')) + '</span>' : '');
       }
     }
 
@@ -253,6 +469,11 @@
       var subtitle = meta.description || label('headerSubtitle', state, 'Obsidian Technical Cockpit — sincronizado con orquestador IA');
       subtitleEl.textContent = subtitle;
     }
+
+    // Dynamic digital clock, last update & harness card
+    initDigitalClock(doc);
+    renderLastUpdate(state, doc);
+    renderHarness(state, doc);
 
     // Header meta: branch · commit and sync status
     var headerMeta = doc.querySelector('.header-meta');
@@ -382,7 +603,7 @@
       + '<div style="font-size:12px;color:var(--text-tertiary);"><span id="stat-completed-count">' + completed + '</span> de <span id="stat-total-count">' + total + '</span> tareas</div>'
       + '</div>'
       + '<div class="progress-track"><div id="overall-progress-bar" class="progress-bar inprogress" style="width:' + overallPct + '%;"></div></div>'
-      + '<div style="font-size:11.5px;color:var(--text-tertiary);display:flex;justify-content:space-between;">'
+      + '<div class="metric-card-footer-row" style="font-size:11.5px;color:var(--text-tertiary);display:flex;justify-content:space-between;align-items:center;padding-right:72px;">'
       + '<span>' + completed + ' completadas</span>'
       + '<span>' + (total - completed) + ' restantes</span>'
       + '</div>'
@@ -395,7 +616,7 @@
       + '</div>'
       + '<div style="font-size:16px;font-weight:600;color:#fff;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="current-focus-title">' + focusTitle + '</div>'
       + '<div class="progress-track"><div style="width:' + focusPct + '%;height:100%;background:var(--accent-purple);border-radius:4px;transition:width 0.35s;"></div></div>'
-      + '<div style="font-size:11.5px;color:var(--text-tertiary);display:flex;justify-content:space-between;">'
+      + '<div class="metric-card-footer-row" style="font-size:11.5px;color:var(--text-tertiary);display:flex;justify-content:space-between;align-items:center;padding-right:72px;">'
       + '<span>' + (focusPhase && focusPhase.lead ? 'Lead: ' + esc(focusPhase.lead) : 'Sprint activo') + '</span>'
       + '<span style="font-family:var(--font-mono);">' + focusPct + '%</span>'
       + '</div>'
@@ -561,9 +782,13 @@
   var TMHeaderHud = {
     renderHeader: renderHeader,
     renderHud: renderHud,
+    initDigitalClock: initDigitalClock,
+    renderLastUpdate: renderLastUpdate,
+    renderHarness: renderHarness,
+    updateClockDisplay: updateClockDisplay,
     closeOverviewDetailDialog: closeOverviewDetailDialog,
     setupNavTabs: setupNavTabs,
-    activateView: function (targetId, doc) { setupNavTabs(doc); var button = doc.querySelector('.tab-btn[data-target-view="' + targetId + '"]'); if (button) button.click(); },
+    activateView: function (targetId, doc) { setupNavTabs(doc); var button = doc.querySelector('.tab-btn[data-target-view=\"' + targetId + '\"]'); if (button) button.click(); },
     renderAll: renderAll
   };
 

@@ -136,18 +136,21 @@
     .header-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
     .header-titles { min-width: 0; }
     .header-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #1f6feb, #bc8cff);
-      border-radius: var(--radius-md);
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-size: 20px;
-      font-weight: 700;
       flex-shrink: 0;
-      box-shadow: var(--glow-blue);
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      filter: drop-shadow(0 0 10px rgba(94, 160, 239, 0.45));
+    }
+    .header-icon svg {
+      width: 38px;
+      height: 38px;
+      display: block;
     }
 
     .header-titles h1 {
@@ -173,6 +176,336 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
+    }
+
+    /* Header Cockpit Hub (Center Clock + Last Update) */
+    .header-center-hub {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .digital-clock-card {
+      background: linear-gradient(145deg, var(--bg-surface-secondary), var(--bg-surface-tertiary));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 6px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+      position: relative;
+      min-width: 220px;
+      user-select: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .digital-clock-card:hover {
+      border-color: var(--border-medium);
+      box-shadow: 0 4px 18px rgba(88, 166, 255, 0.15);
+    }
+
+    .clock-display-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .clock-digits-group {
+      display: flex;
+      align-items: baseline;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .clock-digit {
+      font-variant-numeric: tabular-nums;
+      display: inline-block;
+      min-width: 1.25ch;
+      text-align: center;
+    }
+
+    .clock-hours {
+      font-size: 22px;
+      font-weight: 800;
+      color: #58a6ff;
+      background: linear-gradient(135deg, #58a6ff 0%, #79c0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 6px rgba(88, 166, 255, 0.3));
+    }
+
+    .clock-separator {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      margin: 0 1px;
+      animation: clockBlink 1s ease-in-out infinite;
+    }
+
+    .clock-minutes {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ff7b72;
+      background: linear-gradient(135deg, #ff7b72 0%, #ffa657 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 6px rgba(255, 123, 114, 0.3));
+    }
+
+    .clock-sec-sep {
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .clock-seconds {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-green);
+      min-width: 2ch;
+      filter: drop-shadow(0 0 4px rgba(63, 185, 80, 0.3));
+    }
+
+    .clock-period-group {
+      display: flex;
+      align-items: center;
+    }
+
+    .clock-period {
+      font-size: 10.5px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--accent-amber);
+      padding: 1px 5px;
+      background: var(--color-pending-bg);
+      border: 1px solid var(--color-pending-border);
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.05em;
+    }
+
+    .clock-actions {
+      display: flex;
+      align-items: center;
+      margin-left: 2px;
+    }
+
+    .clock-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: var(--bg-surface-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      min-width: 44px;
+      min-height: 28px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+
+    .clock-toggle-btn:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--border-medium);
+      color: var(--text-primary);
+    }
+
+    .clock-toggle-icon {
+      font-size: 12px;
+      line-height: 1;
+      color: var(--text-tertiary);
+    }
+
+    .clock-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      border-top: 1px solid rgba(48, 54, 61, 0.4);
+      padding-top: 2px;
+      margin-top: 1px;
+    }
+
+    .clock-date-text {
+      font-weight: 600;
+      color: var(--accent-purple);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .clock-tz-badge {
+      font-size: 9.5px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      background: var(--bg-surface-tertiary);
+      padding: 0 4px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+
+    /* Dynamic Last Update Card */
+    .last-update-card {
+      background: linear-gradient(145deg, var(--bg-surface-secondary), var(--bg-surface-tertiary));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 6px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 175px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+      user-select: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .last-update-card:hover {
+      border-color: var(--border-medium);
+    }
+
+    .last-update-status-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .update-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      display: inline-block;
+      animation: pulseDot 2s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+
+    .last-update-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+      font-weight: 700;
+    }
+
+    .last-update-time {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .last-update-subtext {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Active Harness Card */
+    .harness-card {
+      background: linear-gradient(145deg, var(--bg-surface-secondary), var(--bg-surface-tertiary));
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 6px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 175px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+      user-select: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .harness-card:hover {
+      border-color: var(--border-medium);
+      box-shadow: 0 4px 18px rgba(188, 140, 255, 0.15);
+    }
+
+    .harness-status-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .harness-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--accent-purple);
+      box-shadow: 0 0 8px var(--accent-purple);
+      display: inline-block;
+      animation: pulseDotPurple 2s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+
+    .harness-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+      font-weight: 700;
+    }
+
+    .harness-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .harness-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-purple);
+    }
+
+    .harness-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .harness-subtext {
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @keyframes pulseDotPurple {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(188, 140, 255, 0.7); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(188, 140, 255, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(188, 140, 255, 0); }
+    }
+
+    @keyframes clockBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @keyframes pulseDot {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(63, 185, 80, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); }
     }
 
     /* Nav Tabs Bar */
@@ -451,7 +784,9 @@
     .metric-card[role="button"] { cursor:pointer; min-height:44px; }
     .metric-card[role="button"]:focus-visible { outline:2px solid var(--border-focus); outline-offset:3px; border-color:var(--border-focus); }
     .metric-card[role="button"]:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
-    .metric-details-affordance { position:absolute; right:14px; bottom:10px; color:var(--accent-blue); font:10px var(--font-mono); padding:3px 7px; border:1px solid rgba(88,166,255,.32); border-radius:var(--radius-full); background:var(--color-inprogress-bg); }
+    .metric-details-affordance { position:absolute; right:14px; bottom:10px; color:var(--accent-blue); font:10px var(--font-mono); padding:3px 7px; border:1px solid rgba(88,166,255,.32); border-radius:var(--radius-full); background:var(--color-inprogress-bg); pointer-events:none; z-index:2; }
+    .metric-card-footer-row { display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:var(--text-tertiary); padding-right:68px; }
+    .metric-card .metric-summary-copy { padding-right:68px; }
 
     .metric-card::before {
       content: '';
@@ -503,6 +838,8 @@
       .app-container { padding: 10px 12px 40px; }
       .header-panel { align-items: flex-start; flex-wrap: wrap; }
       .header-meta { width: 100%; }
+      .header-center-hub { width: 100%; justify-content: flex-start; }
+      .digital-clock-card, .last-update-card, .harness-card { flex: 1 1 180px; min-width: 0; }
       .nav-tabs-bar { align-items: flex-start; }
       .search-box input { width: 100%; min-width: 0; max-width: 100%; }
       .filter-toolbar { grid-template-columns: 1fr 1fr; align-items: stretch; }
@@ -536,14 +873,46 @@
 
     .overview-detail-stack { display: flex; flex-direction: column; gap: 16px; }
     .overview-section-copy { color: var(--text-tertiary); font-size: 12px; max-width: 70ch; }
-    .overview-phase-list { display: flex; flex-direction: column; gap: 10px; }
-    .overview-phase-row { background: var(--bg-surface-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .overview-phase-list { display: flex; flex-direction: column; gap: 12px; }
+    .overview-phase-row, .overview-phase-card { background: var(--bg-surface-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: border-color 0.15s ease; }
+    .overview-phase-card:hover { border-color: var(--border-medium); }
     .overview-phase-heading { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; }
-    .overview-phase-heading div { display: flex; min-width: 0; flex-direction: column; }
-    .overview-phase-heading strong { color: var(--text-primary); overflow-wrap: anywhere; }
-    .overview-phase-heading div span { color: var(--text-tertiary); font-size: 11.5px; }
+    .overview-phase-heading-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .overview-phase-heading-info strong { color: var(--text-primary); font-size: 14.5px; overflow-wrap: anywhere; }
+    .overview-phase-submeta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--text-tertiary); font-size: 11.5px; }
+    .overview-phase-heading-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .overview-phase-pct-label { font: 700 13px var(--font-mono); color: var(--text-secondary); }
+    .overview-phase-tasks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 4px; }
+    .overview-task-card { background: var(--bg-surface-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; border-left: 3px solid var(--border-subtle); }
+    .overview-task-card.status-completed { border-left-color: var(--accent-green); }
+    .overview-task-card.status-inprogress { border-left-color: var(--accent-blue); }
+    .overview-task-card.status-pending { border-left-color: var(--accent-amber); }
+    .overview-task-card.status-blocked { border-left-color: var(--accent-red); }
+    .overview-task-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .overview-task-id-title { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+    .overview-task-title { font-size: 12.5px; color: var(--text-primary); font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+    .overview-task-note { font-size: 11.5px; color: var(--text-secondary); line-height: 1.35; background: var(--bg-canvas); padding: 5px 8px; border-radius: var(--radius-sm); }
+    .overview-task-bottom { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .overview-task-meta-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .overview-subtasks-pill { font: 11px var(--font-mono); color: var(--accent-purple); background: rgba(188, 140, 255, 0.1); padding: 2px 6px; border-radius: var(--radius-sm); border: 1px solid rgba(188, 140, 255, 0.25); }
+    .overview-phase-empty { color: var(--text-muted); font-size: 12px; font-style: italic; padding: 8px 0; }
     .overview-phase-tasks { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 7px 12px; }
     .overview-phase-tasks > span { display: flex; align-items: center; gap: 7px; color: var(--text-secondary); font-size: 12px; min-width: 0; overflow-wrap: anywhere; }
+
+    /* Sub-tasks styles in Dedicated Phases tab */
+    .task-subtasks-box { background: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px 12px; margin: 8px 0 4px 0; display: flex; flex-direction: column; gap: 8px; }
+    .task-subtasks-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .task-subtasks-title { font: 600 11.5px var(--font-mono); color: var(--text-secondary); }
+    .subtasks-mini-track { width: 80px; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden; }
+    .subtasks-mini-bar { height: 100%; background: var(--accent-green); border-radius: 2px; transition: width 0.3s ease; }
+    .task-subtasks-list { display: flex; flex-direction: column; gap: 4px; }
+    .task-subtask-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); padding: 3px 0; }
+    .task-subtask-item.subtask-done { color: var(--text-muted); text-decoration: line-through; }
+    .task-subtask-item.subtask-done .subtask-icon { color: var(--accent-green); text-decoration: none; font-weight: bold; }
+    .task-subtask-item.subtask-inprogress .subtask-icon { color: var(--accent-blue); }
+    .task-subtask-item.subtask-blocked .subtask-icon { color: var(--accent-red); }
+    .task-subtask-item.subtask-pending .subtask-icon { color: var(--text-muted); }
+    .task-blocker-notice { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--accent-red); background: var(--color-blocked-bg); border: 1px solid rgba(248, 81, 73, 0.3); padding: 6px 10px; border-radius: var(--radius-sm); margin-top: 4px; }
 
     /* Standard Panel Cards */
     .panel-card {
@@ -825,13 +1194,30 @@
     .codegraph-chip-list code { padding:5px 8px; background:var(--bg-surface-secondary); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:var(--accent-blue); overflow-wrap:anywhere; }
     .codegraph-details { margin-top:18px; }
     .codegraph-details pre { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:14px; color:var(--text-secondary); max-height:280px; overflow:auto; }
-    .codegraph-container { background:var(--bg-surface-secondary); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:18px; overflow:auto; }
-    .codegraph-summary { display:grid; grid-template-columns:auto auto minmax(240px,1fr); gap:12px; align-items:center; margin-bottom:8px; }
+    .codegraph-container { background:radial-gradient(ellipse at center, var(--bg-surface-tertiary) 0%, var(--bg-surface-secondary) 100%); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:20px; overflow:hidden; position:relative; }
+    .codegraph-summary { display:grid; grid-template-columns:auto auto minmax(240px,1fr); gap:12px; align-items:center; margin-bottom:12px; }
     .codegraph-summary > div { display:flex; align-items:baseline; gap:6px; }
     .codegraph-summary strong { color:var(--text-primary); font:700 20px var(--font-mono); }
     .codegraph-summary span, .codegraph-summary p { color:var(--text-tertiary); font-size:11.5px; }
-    .graph-node rect, .graph-node circle { transition:filter .2s ease, stroke .2s ease, transform .2s ease; }
-    .graph-node:hover rect, .graph-node:focus rect { stroke:var(--accent-purple); filter:drop-shadow(0 0 12px rgba(188,140,255,.34)); }
+    .codegraph-svg { overflow:visible; cursor:grab; user-select:none; }
+    .codegraph-svg:active { cursor:grabbing; }
+    .graph-edge { transition:stroke .2s ease, stroke-width .2s ease, stroke-opacity .2s ease; }
+    .graph-edge.active { stroke:var(--accent-purple); stroke-width:3px; stroke-opacity:1; filter:drop-shadow(0 0 6px var(--accent-purple)); }
+    .graph-edge-flow { stroke-dasharray:6, 6; animation:dashFlow 1s linear infinite; }
+    .graph-node { transition:transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1); cursor:pointer; }
+    .graph-node circle.node-bg { fill:var(--bg-surface-primary); stroke:var(--accent-blue); stroke-width:2.5px; transition:all .25s ease; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+    .graph-node:hover circle.node-bg, .graph-node:focus-visible circle.node-bg { stroke:var(--accent-purple); stroke-width:3.5px; fill:var(--bg-surface-secondary); filter:drop-shadow(0 0 16px rgba(188,140,255,.55)); }
+    .graph-node circle.node-pulse { fill:none; stroke:var(--accent-blue); stroke-width:1.5px; opacity:0.4; animation:nodePulse 2.5s infinite ease-out; }
+    .graph-node:hover circle.node-pulse { stroke:var(--accent-purple); }
+    .graph-node text { pointer-events:none; }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -12; }
+    }
+    @keyframes nodePulse {
+      0% { r:46; opacity:0.6; }
+      100% { r:62; opacity:0; }
+    }
     .tree-blueprint, .git-workbench { display:flex; flex-direction:column; gap:14px; }
     .tree-view { font-family:var(--font-mono); font-size:12.5px; color:var(--text-secondary); line-height:1.75; background:var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; min-height:420px; max-height:640px; overflow:auto; }
     .tree-node { display:grid; grid-template-columns:22px minmax(0,1fr) auto; align-items:center; gap:7px; min-height:30px; border-radius:5px; }
@@ -891,6 +1277,394 @@
     #tm-diagnostics ul { padding-left:18px; }
     #tm-state-json { max-height:360px; overflow:auto; white-space:pre; background:var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px; color:var(--text-secondary); font:12px/1.55 var(--font-mono); }
     .state-tools-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+
+    /* Welcome / Instructions Modal Dialog */
+    #welcome-dialog {
+      color: var(--text-primary);
+      background: var(--bg-surface-primary);
+      border: 2px solid var(--accent-red);
+      border-radius: var(--radius-lg);
+      width: min(840px, calc(100% - 32px));
+      max-width: none;
+      max-height: min(860px, calc(100dvh - 32px));
+      margin: auto;
+      padding: 0;
+      box-shadow: var(--shadow-lg), 0 0 50px rgba(248, 81, 73, 0.25);
+      overflow: hidden;
+    }
+    #welcome-dialog::backdrop {
+      background: rgba(3, 6, 10, 0.86);
+      backdrop-filter: blur(4px);
+    }
+    .welcome-dialog-container {
+      display: flex;
+      flex-direction: column;
+      max-height: min(860px, calc(100dvh - 32px));
+    }
+    .welcome-dialog-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 20px 24px;
+      background: linear-gradient(180deg, rgba(248,81,73,0.14) 0%, rgba(22,27,34,0.6) 100%);
+      border-bottom: 1px solid rgba(248, 81, 73, 0.28);
+    }
+    .welcome-badge-title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .welcome-alert-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(248, 81, 73, 0.2);
+      color: #ff7b72;
+      border: 1px solid var(--accent-red);
+      border-radius: var(--radius-full);
+      padding: 4px 12px;
+      font: 800 13px var(--font-mono);
+      letter-spacing: 0.06em;
+      width: max-content;
+      box-shadow: 0 0 12px rgba(248, 81, 73, 0.3);
+    }
+    #welcome-dialog-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .welcome-close-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .welcome-close-btn:hover {
+      background: rgba(248, 81, 73, 0.2);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .welcome-dialog-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .welcome-intro {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .welcome-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .welcome-step-item {
+      background: var(--bg-surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .welcome-step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      color: #0b0e14;
+      font: 700 12px var(--font-mono);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .welcome-step-item strong {
+      font-size: 12.5px;
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .welcome-step-item p {
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+      line-height: 1.35;
+      margin: 0;
+    }
+    .welcome-prompt-box {
+      background: var(--bg-surface-secondary);
+      border: 1px solid rgba(63, 185, 80, 0.4);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .welcome-prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-green);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .welcome-prompt-tag {
+      background: rgba(63, 185, 80, 0.15);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font: 600 10px var(--font-mono);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+    }
+    .welcome-prompt-pre {
+      font: 11.5px/1.55 var(--font-mono);
+      color: #c9d1d9;
+      background: #0b0e14;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: all;
+    }
+    .welcome-prompt-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .welcome-copy-feedback {
+      font-size: 12px;
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+    .welcome-dialog-footer {
+      padding: 14px 24px;
+      background: var(--bg-surface-secondary);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .welcome-footer-note {
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+      max-width: 50ch;
+    }
+
+    /* Rich Detail Modals (Task, Todo, Git) */
+    #task-detail-dialog, #todo-detail-dialog, #git-detail-dialog {
+      color: var(--text-primary);
+      background: var(--bg-surface-primary);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-lg);
+      width: min(840px, calc(100% - 32px));
+      max-width: none;
+      max-height: min(860px, calc(100dvh - 32px));
+      margin: auto;
+      padding: 0;
+      box-shadow: var(--shadow-lg), 0 0 50px rgba(88, 166, 255, 0.16);
+      overflow: hidden;
+    }
+    #task-detail-dialog::backdrop, #todo-detail-dialog::backdrop, #git-detail-dialog::backdrop {
+      background: rgba(3, 6, 10, 0.86);
+      backdrop-filter: blur(4px);
+    }
+    .task-detail-container, .todo-detail-container, .git-detail-container {
+      display: flex;
+      flex-direction: column;
+      max-height: min(860px, calc(100dvh - 32px));
+    }
+    .task-detail-header, .todo-detail-header, .git-detail-header {
+      padding: 20px 24px 16px;
+      background: linear-gradient(180deg, var(--bg-surface-tertiary) 0%, var(--bg-surface-secondary) 100%);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .task-detail-id-status, .todo-detail-id-status, .git-detail-id-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .task-id-badge {
+      font: 700 12px var(--font-mono);
+      background: rgba(88, 166, 255, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+    .task-detail-header h2, .todo-detail-header h2, .git-detail-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+      margin: 0;
+    }
+    .task-detail-body, .todo-detail-body, .git-detail-body {
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .task-detail-meta-grid, .todo-detail-meta-grid, .git-detail-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+    }
+    .task-detail-meta-item, .todo-detail-meta-item, .git-detail-meta-item {
+      background: var(--bg-surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .task-detail-meta-label, .todo-detail-meta-label, .git-detail-meta-label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+      font-weight: 600;
+    }
+    .task-detail-meta-item strong, .todo-detail-meta-item strong, .git-detail-meta-item strong {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+    .task-detail-blocker {
+      background: rgba(248, 81, 73, 0.12);
+      border: 1px solid var(--accent-red);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      color: var(--accent-red);
+      font-size: 13px;
+    }
+    .task-detail-blocker strong { display: block; margin-bottom: 2px; }
+    .task-detail-section, .todo-detail-section, .git-detail-section {
+      background: var(--bg-surface-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .task-detail-section h3, .todo-detail-section h3, .git-detail-section h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    .task-detail-note-box, .git-detail-msg-box, .todo-detail-action-box {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: var(--bg-canvas);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+    .todo-detail-desc-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .task-detail-subtasks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .task-detail-subtasks-count {
+      font: 700 11.5px var(--font-mono);
+      color: var(--accent-green);
+    }
+    .task-detail-subtasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .task-detail-subtask-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+    .task-detail-subtask-row.done {
+      border-color: rgba(63, 185, 80, 0.4);
+      background: rgba(63, 185, 80, 0.05);
+    }
+    .task-detail-subtask-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .task-detail-footer, .todo-detail-footer, .git-detail-footer {
+      padding: 14px 24px;
+      background: var(--bg-surface-secondary);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .task-detail-footer-note, .todo-detail-footer-note, .git-detail-footer-note {
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+    }
+    .todo-item[role="button"], .task-item[role="button"], .git-event-card[role="button"], .overview-task-card[role="button"], .kanban-task-card[role="button"] {
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+    }
+    .todo-item[role="button"]:hover, .task-item[role="button"]:hover, .git-event-card[role="button"]:hover, .overview-task-card[role="button"]:hover, .kanban-task-card[role="button"]:hover {
+      border-color: var(--border-focus);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .todo-item[role="button"]:focus-visible, .task-item[role="button"]:focus-visible, .git-event-card[role="button"]:focus-visible, .overview-task-card[role="button"]:focus-visible, .kanban-task-card[role="button"]:focus-visible {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 2px;
+      border-color: var(--border-focus);
+    }
 
     /* Dedicated View Containers */
     .view-container { display: flex; flex-direction: column; gap: 16px; width: 100%; }
@@ -955,6 +1729,7 @@
       .codegraph-summary p { grid-column:1 / -1; }
       #codegraph-dialog { width:calc(100% - 16px); padding:16px; max-height:calc(100dvh - 16px); }
       #overview-detail-dialog { width:calc(100% - 16px); padding:16px; max-height:calc(100dvh - 16px); }
+      #welcome-dialog { width:calc(100% - 16px); padding:0; max-height:calc(100dvh - 16px); }
       .overview-detail-heading, .state-health-card { grid-template-columns:1fr; display:grid; }
       .state-health-counts { justify-content:flex-start; }
       .git-summary-grid, .tree-summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
@@ -974,16 +1749,67 @@
     <!-- AI-EDITABLE: HEADER -->
     <header class="header-panel" id="project-header-panel">
       <div class="header-brand">
-        <div class="header-icon">◈</div>
+        <div class="header-icon" id="project-logo-icon" title="Task Manager Cockpit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 18 18"><defs><linearGradient id="b64029dc-53b6-43b2-8aae-92413846e51c" y1="9" x2="18" y2="9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#5ea0ef" /><stop offset="1" stop-color="#0078d4" /></linearGradient><linearGradient id="bfc54d5e-2678-40a3-87f5-a3381ba974de" x1="3.092" y1="8.98" x2="14.9" y2="8.98" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#50e6ff" /><stop offset="1" stop-color="#32bedd" /></linearGradient><linearGradient id="b1aeb350-670b-47cd-881a-82e451a61e61" x1="3.154" y1="6.215" x2="10.922" y2="6.215" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#5ea0ef" /><stop offset="0.432" stop-color="#3890e4" /><stop offset="1" stop-color="#0078d4" /></linearGradient></defs><g id="a8e49afa-0212-415e-a59c-566b1a954500"><path d="M9.276,0A8.957,8.957,0,0,0,3.968,1.54a.6.6,0,0,0-.138.873l.788.993A7.1,7.1,0,1,1,2.084,7.359a.6.6,0,0,0-.412-.707l-.657-.2a.6.6,0,0,0-.763.434A9,9,0,1,0,9.276,0Z" fill="url(#b64029dc-53b6-43b2-8aae-92413846e51c)" /><circle cx="13.69" cy="7.663" r="1.437" fill="#f78d1e" /><circle cx="7.896" cy="13.799" r="1.437" fill="#f78d1e" /><path d="M6.125,6.191,4.993,4.659a5.9,5.9,0,0,1,8.859.983c-.054,0-.106-.016-.162-.016a2.027,2.027,0,0,0-1.617.812,3.984,3.984,0,0,0-5.948-.247ZM5.859,13.8a2.027,2.027,0,0,1,.761-1.575A4,4,0,0,1,5.022,9.6a4.043,4.043,0,0,1,.024-1.338.6.6,0,0,0-.409-.689l-.66-.205a.6.6,0,0,0-.766.448A5.876,5.876,0,0,0,5.879,14C5.873,13.93,5.859,13.866,5.859,13.8ZM13.69,9.7a2.01,2.01,0,0,1-.721-.138,4.016,4.016,0,0,1-3.233,3.376,1.987,1.987,0,0,1-.114,1.93A5.9,5.9,0,0,0,14.9,9.293,2.025,2.025,0,0,1,13.69,9.7Z" fill="url(#bfc54d5e-2678-40a3-87f5-a3381ba974de)" /><path d="M9.253,7.094a1.929,1.929,0,0,0-.834.074L3.973,1.507l-.59.463a.6.6,0,0,0-.1.843L7.359,8A1.909,1.909,0,0,0,7.1,9.26,1.923,1.923,0,1,0,9.253,7.094Z" fill="url(#b1aeb350-670b-47cd-881a-82e451a61e61)" /></g></svg>
+        </div>
         <div class="header-titles">
           <h1 id="project-title"><span>Drop-In Task Manager</span> <span class="badge">v0.1.0</span></h1>
           <p id="project-subtitle">Obsidian Technical Cockpit — sincronizado con orquestador IA</p>
         </div>
       </div>
+      <div class="header-center-hub" id="header-cockpit-hub">
+        <div class="digital-clock-card" id="tm-digital-clock" role="timer" aria-label="Reloj digital en vivo" data-clock-format="12h">
+          <div class="clock-display-row">
+            <div class="clock-digits-group" aria-live="off">
+              <span class="clock-digit clock-hours" id="clock-hours">12</span>
+              <span class="clock-separator" id="clock-colon-1">:</span>
+              <span class="clock-digit clock-minutes" id="clock-minutes">00</span>
+              <span class="clock-separator clock-sec-sep" id="clock-colon-2">:</span>
+              <span class="clock-digit clock-seconds" id="clock-seconds">00</span>
+            </div>
+            <div class="clock-period-group">
+              <span class="clock-period" id="clock-period" aria-label="Período horario">AM</span>
+            </div>
+            <div class="clock-actions">
+              <button type="button" class="clock-toggle-btn" id="btn-clock-toggle-format" title="Alternar formato 12h / 24h" aria-label="Alternar formato de reloj 12 horas o 24 horas">
+                <span class="clock-toggle-icon" aria-hidden="true">⋮</span>
+                <span class="clock-format-tag" id="clock-format-tag">12H</span>
+              </button>
+            </div>
+          </div>
+          <div class="clock-meta-row">
+            <span class="clock-date-text" id="clock-date">Cargando fecha...</span>
+            <span class="clock-tz-badge" id="clock-timezone" title="Zona horaria local del sistema">LOCAL</span>
+          </div>
+        </div>
+
+        <div class="last-update-card" id="tm-last-update" role="status" aria-label="Información de última actualización del HTML">
+          <div class="last-update-status-row">
+            <span class="update-pulse-dot" aria-hidden="true"></span>
+            <span class="last-update-label">Última act. HTML</span>
+          </div>
+          <div class="last-update-time" id="last-update-relative">Recientemente</div>
+          <div class="last-update-subtext" id="last-update-exact">Sincronizado</div>
+        </div>
+
+        <div class="harness-card" id="tm-harness-card" role="status" aria-label="AI Harness Activo">
+          <div class="harness-status-row">
+            <span class="harness-pulse-dot" aria-hidden="true"></span>
+            <span class="harness-label">HARNESS ACTIVO</span>
+          </div>
+          <div class="harness-title-row">
+            <span class="harness-icon-wrap" id="harness-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <span class="harness-name" id="harness-name">OpenCode</span>
+          </div>
+          <div class="harness-subtext" id="harness-role">Autonomous Multi-Agent</div>
+        </div>
+      </div>
       <div class="header-meta">
         <span class="badge"><span class="badge-dot inprogress"></span> main · abc1234</span>
         <span class="badge"><span class="badge-dot completed"></span> Sincronizado</span>
-      <button class="btn btn-secondary btn-sm" id="btn-expand-all" title="Expandir/colapsar todas las fases">Expandir fases</button>
+        <button class="btn btn-secondary btn-sm" id="btn-expand-all" title="Expandir/colapsar todas las fases">Expandir fases</button>
       </div>
     </header>
 
@@ -1024,6 +1850,206 @@
     <div id="tm-error-banner" hidden data-error-banner style="display:none;">Error banner placeholder</div>
     <dialog id="codegraph-dialog" aria-labelledby="codegraph-dialog-title" aria-describedby="codegraph-dialog-description"><h2 id="codegraph-dialog-title"></h2><p id="codegraph-dialog-description"></p><div id="codegraph-dialog-content"></div><button type="button" class="btn btn-secondary" data-codegraph-close>Cerrar</button></dialog>
     <dialog id="overview-detail-dialog" aria-labelledby="overview-detail-title" aria-describedby="overview-detail-summary"><div class="overview-detail-heading"><div><h2 id="overview-detail-title"></h2><div id="overview-detail-value"></div><p id="overview-detail-summary"></p></div><button type="button" class="btn btn-secondary" data-overview-close>Cerrar</button></div><div id="overview-detail-content"></div><div class="overview-detail-actions"><button type="button" class="btn btn-secondary" data-overview-view-section hidden>Ver sección</button></div></dialog>
+    <dialog id="welcome-dialog" aria-labelledby="welcome-dialog-title" aria-describedby="welcome-dialog-desc">
+      <div class="welcome-dialog-container">
+        <div class="welcome-dialog-header">
+          <div class="welcome-badge-title">
+            <span class="welcome-alert-badge">⚠️ ¡ATENCIÓN! — LEER ANTES DE EMPEZAR</span>
+            <h2 id="welcome-dialog-title">Activación Autónoma del Gestor de Tareas</h2>
+          </div>
+          <button type="button" class="welcome-close-btn" data-welcome-close aria-label="Cerrar ventana emergente">✕</button>
+        </div>
+        <div class="welcome-dialog-body">
+          <p class="welcome-intro" id="welcome-dialog-desc">
+            Este archivo es 100% portable y autónomo. Para que tu IA mantenga actualizado este dashboard en tiempo real sin interrumpirte con preguntas, copia el prompt maestro optimizado a continuación y pégaselo al inicio de tu sesión.
+          </p>
+          <div class="welcome-steps-grid">
+            <div class="welcome-step-item">
+              <div class="welcome-step-number">1</div>
+              <div>
+                <strong>Copia el Prompt</strong>
+                <p>Usa el botón verde para copiar el prompt oficial al portapapeles.</p>
+              </div>
+            </div>
+            <div class="welcome-step-item">
+              <div class="welcome-step-number">2</div>
+              <div>
+                <strong>Pégalo en tu IA</strong>
+                <p>Envíalo a Claude Code, OpenCode, Cursor o ChatGPT en la raíz de tu proyecto.</p>
+              </div>
+            </div>
+            <div class="welcome-step-item">
+              <div class="welcome-step-number">3</div>
+              <div>
+                <strong>100% Autónomo</strong>
+                <p>La IA autodescubre el proyecto, crea fases/subtareas y actualiza el HTML.</p>
+              </div>
+            </div>
+          </div>
+          <div class="welcome-prompt-box">
+            <div class="welcome-prompt-header">
+              <span>📋 Prompt Maestro para la IA</span>
+              <span class="welcome-prompt-tag">Autónomo + Subagente</span>
+            </div>
+            <pre class="welcome-prompt-pre" id="welcome-prompt-text" data-welcome-prompt></pre>
+            <div class="welcome-prompt-actions">
+              <button type="button" class="btn btn-secondary" style="background:#238636;border-color:#3fb950;color:#fff;" id="btn-copy-welcome-prompt" data-copy-welcome-prompt>📋 Copiar Prompt Maestro</button>
+              <span class="welcome-copy-feedback" id="welcome-copy-feedback" data-copy-welcome-feedback role="status" aria-live="polite" style="display:none;"></span>
+            </div>
+          </div>
+        </div>
+        <div class="welcome-dialog-footer">
+          <span class="welcome-footer-note">💡 Puedes consultar o volver a copiar este prompt en cualquier momento desde la pestaña <strong>Consola IA</strong>.</span>
+          <button type="button" class="btn btn-secondary" data-welcome-close>Entendido, comenzar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Task Detail Modal Dialog -->
+    <dialog id="task-detail-dialog" aria-labelledby="task-detail-title" aria-describedby="task-detail-note">
+      <div class="task-detail-container">
+        <div class="task-detail-header">
+          <div class="task-detail-badge-title">
+            <div class="task-detail-id-status">
+              <span class="task-id-badge" id="task-detail-id">T1-01</span>
+              <span class="badge" id="task-detail-status-badge"><span class="badge-dot" id="task-detail-status-dot"></span> <span id="task-detail-status-text">Completado</span></span>
+              <span class="badge badge-tag" id="task-detail-phase-badge">Fase 1</span>
+            </div>
+            <h2 id="task-detail-title">Título de la Tarea</h2>
+          </div>
+          <button type="button" class="welcome-close-btn" data-task-close aria-label="Cerrar detalles de tarea">✕</button>
+        </div>
+        <div class="task-detail-body">
+          <div class="task-detail-meta-grid">
+            <div class="task-detail-meta-item">
+              <span class="task-detail-meta-label">Responsable SDD</span>
+              <strong id="task-detail-owner">sdd-apply</strong>
+            </div>
+            <div class="task-detail-meta-item">
+              <span class="task-detail-meta-label">Etiqueta / Dominio</span>
+              <strong id="task-detail-tag">Backend</strong>
+            </div>
+            <div class="task-detail-meta-item">
+              <span class="task-detail-meta-label">Commit Vinculado</span>
+              <code id="task-detail-commit">—</code>
+            </div>
+            <div class="task-detail-meta-item">
+              <span class="task-detail-meta-label">Objetivo / Sprint</span>
+              <strong id="task-detail-target">—</strong>
+            </div>
+          </div>
+          <div id="task-detail-blocker-box" class="task-detail-blocker" style="display:none;">
+            <strong>⚠️ Bloqueo Reportado:</strong>
+            <p id="task-detail-blocker-text"></p>
+          </div>
+          <div class="task-detail-section">
+            <h3>📝 Descripción y Notas Técnicas</h3>
+            <div class="task-detail-note-box" id="task-detail-note">Sin notas técnicas adicionales.</div>
+          </div>
+          <div class="task-detail-section" id="task-detail-subtasks-section">
+            <div class="task-detail-subtasks-header">
+              <h3>⚡ Desglose de Sub-tareas</h3>
+              <span class="task-detail-subtasks-count" id="task-detail-subtasks-count">0 / 0 completadas</span>
+            </div>
+            <div class="task-detail-subtasks-list" id="task-detail-subtasks-list"></div>
+          </div>
+        </div>
+        <div class="task-detail-footer">
+          <span class="task-detail-footer-note">Información sincronizada con el estado inmutable <code>#tm-state</code>.</span>
+          <button type="button" class="btn btn-secondary" data-task-close>Cerrar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Todo / Señal de Atención Modal Dialog -->
+    <dialog id="todo-detail-dialog" aria-labelledby="todo-detail-title" aria-describedby="todo-detail-desc">
+      <div class="todo-detail-container">
+        <div class="todo-detail-header">
+          <div class="todo-detail-badge-title">
+            <div class="todo-detail-id-status">
+              <span class="task-id-badge" id="todo-detail-id">td-1</span>
+              <span class="badge" id="todo-detail-priority-badge">P0 Urgente</span>
+              <span class="badge badge-tag" id="todo-detail-status-badge">Completada</span>
+            </div>
+            <h2 id="todo-detail-title">Señal de Atención</h2>
+          </div>
+          <button type="button" class="welcome-close-btn" data-todo-close aria-label="Cerrar señal de atención">✕</button>
+        </div>
+        <div class="todo-detail-body">
+          <div class="todo-detail-section">
+            <h3>🎯 ¿Qué es esta Señal de Atención?</h3>
+            <p id="todo-detail-desc" class="todo-detail-desc-text">
+              Las Señales de Atención son alertas tempranas, recordatorios operativos e invariantes técnicas que el orquestador IA y los subagentes deben monitorear y respetar durante el desarrollo sin ejecutar acciones destructivas no autorizadas.
+            </p>
+          </div>
+          <div class="todo-detail-meta-grid">
+            <div class="todo-detail-meta-item">
+              <span class="todo-detail-meta-label">Nivel de Prioridad</span>
+              <strong id="todo-detail-p-level">P0 (Bloqueante / Crítico)</strong>
+            </div>
+            <div class="todo-detail-meta-item">
+              <span class="todo-detail-meta-label">Destinatario</span>
+              <strong>Orquestador IA & Subagentes</strong>
+            </div>
+            <div class="todo-detail-meta-item">
+              <span class="todo-detail-meta-label">Estado de Verificación</span>
+              <strong id="todo-detail-state-text">Completada / Verificada</strong>
+            </div>
+          </div>
+          <div class="todo-detail-section">
+            <h3>💡 Recomendación de Acción para la IA</h3>
+            <div class="todo-detail-action-box" id="todo-detail-action-guidance">
+              Verifica que los contratos, pruebas y requerimientos asociados a esta señal se encuentren íntegros antes de reportar la tarea como finalizada.
+            </div>
+          </div>
+        </div>
+        <div class="todo-detail-footer">
+          <span class="todo-detail-footer-note">Este panel es un monitor informativo; no emite mutaciones automáticas.</span>
+          <button type="button" class="btn btn-secondary" data-todo-close>Cerrar</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Git Commit Detail Modal Dialog -->
+    <dialog id="git-detail-dialog" aria-labelledby="git-detail-title" aria-describedby="git-detail-msg">
+      <div class="git-detail-container">
+        <div class="git-detail-header">
+          <div class="git-detail-badge-title">
+            <div class="git-detail-id-status">
+              <span class="task-id-badge" id="git-detail-hash">abc1234</span>
+              <span class="git-kind" id="git-detail-kind">feat</span>
+              <span class="badge" style="color:var(--accent-green);border-color:rgba(63,185,80,0.3);"><span class="badge-dot completed"></span> Sincronizado</span>
+            </div>
+            <h2 id="git-detail-title">Detalle del Commit Git</h2>
+          </div>
+          <button type="button" class="welcome-close-btn" data-git-close aria-label="Cerrar detalle de commit">✕</button>
+        </div>
+        <div class="git-detail-body">
+          <div class="git-detail-section">
+            <h3>🌿 Mensaje de Commit</h3>
+            <div class="git-detail-msg-box" id="git-detail-msg">feat: esqueleto base + tokens</div>
+          </div>
+          <div class="git-detail-meta-grid">
+            <div class="git-detail-meta-item">
+              <span class="git-detail-meta-label">Rama Asociada</span>
+              <strong id="git-detail-branch">main</strong>
+            </div>
+            <div class="git-detail-meta-item">
+              <span class="git-detail-meta-label">Hash Completo</span>
+              <code id="git-detail-full-hash">abc1234567890</code>
+            </div>
+            <div class="git-detail-meta-item">
+              <span class="git-detail-meta-label">Estado de Sincronización</span>
+              <span id="git-detail-sync">Sincronizado</span>
+            </div>
+          </div>
+        </div>
+        <div class="git-detail-footer">
+          <span class="git-detail-footer-note">Lectura offline directa del árbol git registrado en <code>#tm-state</code>.</span>
+          <button type="button" class="btn btn-secondary" data-git-close>Cerrar</button>
+        </div>
+      </div>
+    </dialog>
 
     <!-- Tab View: Overview (Integrated dual column) -->
     <div id="view-overview" class="view-container">

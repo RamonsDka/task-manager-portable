@@ -135,19 +135,16 @@ Reglas:
 
 La guía completa está en [`docs/AI-ORCHESTRATOR-GUIDE.md`](docs/AI-ORCHESTRATOR-GUIDE.md).
 
-> **Nota sobre el nombre del archivo:** Si descargaste el archivo desde Releases o lo copiaste a tu proyecto, el archivo a mantener es `Task-Manager-Portable.html`. El archivo `drop-in-task-manager.html` es un artefacto de desarrollo interno/ensamblado generado en este repositorio.
-
 ## Estructura del repositorio
 
 ```text
 task-manager-portable/
-├── Task-Manager-Portable.html   # archivo listo para compartir
-├── drop-in-task-manager.html    # salida determinista de desarrollo
-├── modules/                     # HTML, CSS y JavaScript fuente
-├── scripts/                     # ensamblaje y scanner de portabilidad
-├── tests/                       # node:test, happy-dom y Playwright
-├── docs/
-│   ├── image/                   # capturas utilizadas en la documentación
+├── Task-Manager-Portable.html   # único archivo ejecutable (abrir con doble clic)
+├── modules/                     # HTML, CSS y JavaScript modulares fuente
+├── scripts/                     # ensamblador (assemble) y scanner de portabilidad
+├── tests/                       # pruebas unitarias y validación browser e2e
+├── docs/                        # documentación técnica y capturas
+│   ├── image/
 │   ├── USAGE.md
 │   ├── CUSTOMIZATION.md
 │   ├── ARCHITECTURE.md

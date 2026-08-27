@@ -33,7 +33,7 @@ TMCore
 | `modules/05-panels.js` | Git, árbol y Codegraph |
 | `modules/06-todo-help.js` | Señales, ayuda, diagnóstico y exportación |
 
-`scripts/assemble.mjs` concatena estos módulos como scripts clásicos dentro de `drop-in-task-manager.html`.
+`scripts/assemble.mjs` concatena estos módulos como scripts clásicos dentro de `Task-Manager-Portable.html`.
 
 ## Decisiones principales
 

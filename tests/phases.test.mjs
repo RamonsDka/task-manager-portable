@@ -120,6 +120,38 @@ describe('phases — ordered sections+badges; full row fields', () => {
     assert.equal(metaBar.textContent.includes('Q1'), true);
     assert.equal(metaBar.textContent.includes('Ana'), true);
   });
+
+  it('renders sub-tasks checklist and blocker notices within task rows', () => {
+    const state = createState({
+      phases: [{
+        id: 'phase-sub',
+        number: 1,
+        title: 'Fase con subtareas',
+        status: 'in-progress',
+        tasks: [{
+          id: 'T-SUB-01',
+          title: 'Tarea principal con subtareas',
+          status: 'in-progress',
+          blockedReason: 'Falta credencial de staging',
+          subtasks: [
+            { id: 'ST-1', title: 'Sub-tarea uno completada', status: 'completed', done: true },
+            { id: 'ST-2', title: 'Sub-tarea dos en curso', status: 'in-progress', done: false }
+          ]
+        }]
+      }]
+    });
+    const { document } = mountWithPhases(state);
+    const taskEl = document.querySelector('#phases-list [data-task-id="T-SUB-01"]');
+    assert.notEqual(taskEl, null);
+    const subtasksBox = taskEl.querySelector('.task-subtasks-box');
+    assert.notEqual(subtasksBox, null, 'task-subtasks-box must be rendered');
+    assert.equal(subtasksBox.textContent.includes('Sub-tareas (1/2)'), true);
+    assert.equal(subtasksBox.querySelectorAll('.task-subtask-item').length, 2);
+
+    const blocker = taskEl.querySelector('.task-blocker-notice');
+    assert.notEqual(blocker, null);
+    assert.equal(blocker.textContent.includes('Falta credencial de staging'), true);
+  });
 });
 
 describe('phases — overview read-only mirrors', () => {
@@ -398,5 +430,52 @@ describe('phases — dedicated detail ownership and preview controls', () => {
     const search = document.getElementById('task-filter-text');
     search.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'E', bubbles: true }));
     assert.equal(mount.querySelector('.phase-card').classList.contains('collapsed'), true, 'editable controls ignore E');
+  });
+
+  it('opens rich task detail dialog on task click in phases, overview, and kanban', () => {
+    const state = createState({
+      phases: [{
+        id: 'p1', number: 1, title: 'Fase Core', status: 'in-progress', target: 'Sprint 1', lead: 'sdd-tasks', tasks: [
+          {
+            id: 'T1-01', title: 'Implementar parser reactivo', status: 'in-progress',
+            owner: 'sdd-apply', tag: 'Backend', commit: 'abc1234', note: 'Nota técnica detallada',
+            blockedReason: 'Falta aprobacion',
+            subtasks: [
+              { id: 'ST1-1', title: 'Modelar esquema', status: 'completed', done: true },
+              { id: 'ST1-2', title: 'Validar tipos', status: 'pending', done: false }
+            ]
+          }
+        ]
+      }]
+    });
+    const { document, phases } = mountWithPhases(state);
+    phases.renderPhases(state, undefined, document);
+
+    const dialog = document.getElementById('task-detail-dialog');
+    assert.notEqual(dialog, null, 'task detail dialog must exist');
+
+    // Click on task item in phases list
+    const taskItem = document.querySelector('#phases-list .task-item');
+    assert.notEqual(taskItem, null);
+    taskItem.click();
+
+    assert.equal(dialog.dataset.open, 'true');
+    assert.equal(dialog.querySelector('#task-detail-id').textContent, 'T1-01');
+    assert.equal(dialog.querySelector('#task-detail-owner').textContent, 'sdd-apply');
+    assert.match(dialog.querySelector('#task-detail-note').textContent, /Nota técnica/);
+    assert.match(dialog.querySelector('#task-detail-blocker-text').textContent, /Falta aprobacion/);
+    assert.equal(dialog.querySelectorAll('.task-detail-subtask-row').length, 2);
+
+    // Close dialog
+    dialog.querySelector('[data-task-close]').click();
+    assert.equal(dialog.dataset.open, 'false');
+
+    // Click on Kanban task card
+    const kanbanCard = document.querySelector('#kanban-board-mount .task-item');
+    if (kanbanCard) {
+      kanbanCard.click();
+      assert.equal(dialog.dataset.open, 'true');
+      dialog.querySelector('[data-task-close]').click();
+    }
   });
 });

@@ -126,6 +126,27 @@ describe('todo-help — todo text/priority/done visuals', () => {
     assert.equal(textEl.innerHTML.includes('<script>'), false, 'should escape');
     assert.equal(textEl.textContent.includes('<script>'), true);
   });
+
+  it('opens detailed signal dialog with explanation and action guidance on todo click', () => {
+    const state = createState({ todos: [{ id: 'td-1', text: 'Verificar compatibilidad offline', priority: 'P0', done: true }] });
+    const { document } = mountWithTodoHelp(state);
+
+    const dialog = document.getElementById('todo-detail-dialog');
+    assert.notEqual(dialog, null, 'todo detail dialog must exist');
+
+    const todoItem = document.querySelector('.todo-item');
+    assert.notEqual(todoItem, null);
+    todoItem.click();
+
+    assert.equal(dialog.dataset.open, 'true');
+    assert.equal(dialog.querySelector('#todo-detail-id').textContent, 'td-1');
+    assert.match(dialog.querySelector('#todo-detail-title').textContent, /Verificar compatibilidad offline/);
+    assert.match(dialog.querySelector('#todo-detail-desc').textContent, /Señales de Atención son alertas tempranas/);
+    assert.match(dialog.querySelector('#todo-detail-action-guidance').textContent, /Nivel Crítico/);
+
+    dialog.querySelector('[data-todo-close]').click();
+    assert.equal(dialog.dataset.open, 'false');
+  });
 });
 
 describe('todo-help — help shows copy/AI-update/schema + AI-instructions; labels override', () => {
@@ -234,6 +255,34 @@ describe('todo-help — help shows copy/AI-update/schema + AI-instructions; labe
     const feedback = dedicated.querySelector('[data-copy-prompt-feedback]');
     assert.equal(feedback.textContent.includes('Selecciona'), true);
     assert.equal(document.getElementById('tm-state').textContent.includes('schemaVersion'), true);
+  });
+
+  it('provides autonomous Master Prompt and initializes Welcome Dialog with copy & close controls', async () => {
+    const { document, window } = mountWithTodoHelp(createState());
+    const prompt = window.TMTodoHelp.getMasterPrompt();
+    assert.equal(prompt.includes('MODO AUTÓNOMO'), true);
+    assert.equal(prompt.includes('Task-Manager-Portable.html'), true);
+    assert.equal(prompt.includes('subagente'), true);
+    assert.equal(prompt.includes('schemaVersion'), true);
+
+    const welcomeDialog = document.getElementById('welcome-dialog');
+    assert.notEqual(welcomeDialog, null);
+    const welcomePrompt = welcomeDialog.querySelector('[data-welcome-prompt]');
+    assert.notEqual(welcomePrompt, null);
+    assert.equal(welcomePrompt.textContent, prompt);
+
+    let copied = '';
+    Object.defineProperty(window.navigator, 'clipboard', { configurable: true, value: { writeText: async (text) => { copied = text; } } });
+    const welcomeCopyBtn = welcomeDialog.querySelector('[data-copy-welcome-prompt]');
+    assert.notEqual(welcomeCopyBtn, null);
+    welcomeCopyBtn.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.equal(copied, prompt);
+
+    const closeBtn = welcomeDialog.querySelector('[data-welcome-close]');
+    assert.notEqual(closeBtn, null);
+    closeBtn.click();
+    assert.equal(welcomeDialog.dataset.open, 'false');
   });
 });
 

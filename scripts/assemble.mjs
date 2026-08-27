@@ -14,8 +14,6 @@ const hudPath = path.join(projectRoot, 'modules', '03-header-hud.js');
 const phasesPath = path.join(projectRoot, 'modules', '04-phases.js');
 const panelsPath = path.join(projectRoot, 'modules', '05-panels.js');
 const todoHelpPath = path.join(projectRoot, 'modules', '06-todo-help.js');
-const outPath = path.join(projectRoot, 'drop-in-task-manager.html');
-const distPath = path.join(projectRoot, 'dist-share', 'drop-in-task-manager.html');
 const portablePath = path.join(projectRoot, 'Task-Manager-Portable.html');
 
 // Example state — full dashboard as user requested "Todo como tu dashboard" (v1 completa)
@@ -23,12 +21,15 @@ const portablePath = path.join(projectRoot, 'Task-Manager-Portable.html');
 const exampleState = {
   schemaVersion: '1.0',
   meta: {
-    projectName: 'Mi Proyecto Demo',
-    version: '1.0.0',
+    projectName: 'Task Manager Portable',
+    version: '1.0.1',
     branch: 'main',
-    commit: 'a1b2c3d',
+    commit: '2faddaa',
     syncStatus: 'Sincronizado',
-    description: 'Gestor de tareas drop-in — actualizado por IA orquestadora',
+    harness: 'OpenCode',
+    harnessRole: 'Autonomous Multi-Agent Runtime',
+    description: 'Single-file offline project dashboard with zero runtime dependencies',
+    lastUpdated: '2026-08-26T15:00:00Z',
     labels: {
       es: {
         overallProgress: 'Progreso Global',
@@ -36,101 +37,262 @@ const exampleState = {
         filterActive: 'Activas',
         todoTitle: 'Tareas Rápidas',
         helpTitle: 'Ayuda — Cómo usar este archivo',
-        headerSubtitle: 'Proyecto gestionado con Drop-In Task Manager',
+        headerSubtitle: 'Dashboard técnico drop-in — gestionado por orquestador IA',
       }
     },
-    features: { git: true, tree: true, codegraph: true, help: true }
-    ,history: [
-      { timestamp: '2026-08-18T09:00:00Z', completed: 4, total: 14 },
-      { timestamp: '2026-08-19T09:00:00Z', completed: 6, total: 14 },
-      { timestamp: '2026-08-20T09:00:00Z', completed: 8, total: 14 },
-      { timestamp: '2026-08-21T09:00:00Z', completed: 9, total: 14 }
+    features: { git: true, tree: true, codegraph: true, help: true },
+    history: [
+      { timestamp: '2026-08-18T09:00:00Z', completed: 4, total: 16 },
+      { timestamp: '2026-08-20T09:00:00Z', completed: 8, total: 16 },
+      { timestamp: '2026-08-24T09:00:00Z', completed: 12, total: 16 },
+      { timestamp: '2026-08-26T15:00:00Z', completed: 16, total: 16 }
     ]
   },
   phases: [
     {
       id: 'phase-1',
       number: 1,
-      title: 'Planificación y Diseño',
+      title: 'Planificación y Arquitectura',
       status: 'completed',
-      target: 'Semana 1',
-      lead: 'Ana — Arquitectura',
+      target: 'Fase 1',
+      lead: 'Orquestador',
       tasks: [
-        { id: 'T1-01', title: 'Definir esquema de datos y contratos', status: 'completed', tag: 'Backend', note: 'Esquema validado con equipo. Incluye validación de tipos.', owner: 'Ana', commit: 'a1b2c3d' },
-        { id: 'T1-02', title: 'Diseñar tokens y layout base', status: 'completed', tag: 'Design', note: 'Tokens verbatim del prototipo, dark theme.', owner: 'Luis', commit: 'b2c3d4e' },
-        { id: 'T1-03', title: 'Mapear fases y dependencias', status: 'completed', tag: 'PM', note: 'Dependencias: 1.x → 2.x → 3.x → 4,5,6 → 7', owner: 'Maya', commit: 'c3d4e5f' },
+        {
+          id: 'T1-01',
+          title: 'Definir esquema de datos y contratos JSON schemaVersion 1.0',
+          status: 'completed',
+          tag: 'Backend',
+          note: 'Esquema JSON inmutable validado con tipado estricto y manejo de errores sin white-screen.',
+          owner: 'sdd-spec',
+          commit: 'a1b2c3d',
+          subtasks: [
+            { id: 'ST1-1', title: 'Modelar esquema JSON schemaVersion 1.0', status: 'completed', done: true },
+            { id: 'ST1-2', title: 'Definir reglas de validación y límites', status: 'completed', done: true },
+            { id: 'ST1-3', title: 'Aprobar contratos con el equipo', status: 'completed', done: true }
+          ]
+        },
+        {
+          id: 'T1-02',
+          title: 'Diseñar tokens del tema Obsidian Dark y layout responsivo',
+          status: 'completed',
+          tag: 'Design',
+          note: 'Tokens CSS verbatim, variables :root y soporte para viewports de 320px a 1920px.',
+          owner: 'sdd-design',
+          commit: 'b2c3d4e'
+        },
+        {
+          id: 'T1-03',
+          title: 'Mapear estructura modular desacoplada y scripts de ensamblado',
+          status: 'completed',
+          tag: 'Arch',
+          note: 'Estructura modular 01-07 sin empaquetadores externos para portabilidad directa file://.',
+          owner: 'sdd-explore',
+          commit: 'c3d4e5f'
+        }
       ]
     },
     {
       id: 'phase-2',
       number: 2,
-      title: 'Núcleo y Métricas',
+      title: 'Núcleo y Métricas Reactivas',
       status: 'completed',
-      target: 'Semana 2',
-      lead: 'Carlos — Core',
+      target: 'Fase 2',
+      lead: 'sdd-tasks',
       tasks: [
-        { id: 'T2-01', title: 'Implementar parse/validate/derive', status: 'completed', tag: 'Core', note: 'Maneja 0/0 → 0, sin NaN, escapa </script>', owner: 'Carlos', commit: 'd4e5f6a' },
-        { id: 'T2-02', title: 'Header y HUD con métricas derivadas', status: 'completed', tag: 'Frontend', note: 'Progreso global 68% → dinámico, sin hardcode.', owner: 'Elena', commit: 'e5f6a7b' },
+        {
+          id: 'T2-01',
+          title: 'Implementar parser seguro, validación y derivación matemática',
+          status: 'completed',
+          tag: 'Core',
+          note: 'Manejo seguro de división 0/0, prevención de NaN y escape de etiquetas script.',
+          owner: 'sdd-apply',
+          commit: 'd4e5f6a',
+          subtasks: [
+            { id: 'ST2-1', title: 'Parser con escape seguro \\u003c/script\\u003e', status: 'completed', done: true },
+            { id: 'ST2-2', title: 'Derivación de métricas y porcentajes', status: 'completed', done: true }
+          ]
+        },
+        {
+          id: 'T2-02',
+          title: 'Header y HUD panorámico con métricas derivadas',
+          status: 'completed',
+          tag: 'Frontend',
+          note: 'Cálculo dinámico en tiempo real del progreso global y tarjetas ejecutivas interactivas.',
+          owner: 'sdd-apply',
+          commit: 'e5f6a7b'
+        },
+        {
+          id: 'T2-03',
+          title: 'Hub de cabecera con Reloj Digital 12h/24h y badge de última actualización',
+          status: 'completed',
+          tag: 'Frontend',
+          note: 'Reloj digital en vivo con zona horaria local, switch interactivo 12H/24H y pulso de frescura.',
+          owner: 'sdd-apply',
+          commit: '2faddaa',
+          subtasks: [
+            { id: 'ST2-3a', title: 'Reloj digital reactivo con horas, minutos, segundos y fecha', status: 'completed', done: true },
+            { id: 'ST2-3b', title: 'Interruptor de formato horario 12H/24H y detector de timezone', status: 'completed', done: true },
+            { id: 'ST2-3c', title: 'Badge con cálculo de tiempo relativo de última actualización', status: 'completed', done: true }
+          ]
+        }
       ]
     },
     {
       id: 'phase-3',
       number: 3,
-      title: 'Fases, Tareas y Filtros',
-      status: 'in-progress',
-      target: 'Semana 3',
-      lead: 'Sofía — UI',
+      title: 'Fases, Tareas y Filtros Interactivos',
+      status: 'completed',
+      target: 'Fase 3',
+      lead: 'sdd-apply',
       tasks: [
-        { id: 'T3-01', title: 'Acordeón colapsable + toggle aislado', status: 'completed', tag: 'UI', note: 'Click en cabecera no afecta otras fases.', owner: 'Sofía', commit: 'f6a7b8c' },
-        { id: 'T3-02', title: 'Filtro Todas / Activas', status: 'completed', tag: 'UI', note: 'Oculta completadas, contadores intactos. Guarda preferencia en localStorage.', owner: 'Sofía', commit: 'a7b8c9d' },
-        { id: 'T3-03', title: 'Barra de progreso por fase (2/4 → 50%)', status: 'in-progress', tag: 'UI', note: 'Calculado dinámicamente, vacío → 0%', owner: 'Sofía', commit: '' },
-        { id: 'T3-04', title: 'Prueba de escape <script>alert(1)</script>', status: 'pending', tag: 'Security', note: 'Texto hostil con </script> debe sobrevivir round-trip vía \\u003c/script\\u003e', owner: 'Sec', commit: '', risk: 'high', blockedReason: 'Awaiting security review' },
+        {
+          id: 'T3-01',
+          title: 'Acordeón colapsable con toggle aislado y vista dedicada',
+          status: 'completed',
+          tag: 'UI',
+          note: 'Event delegation optimizado, persistencia en UI preferences e interactividad fluida.',
+          owner: 'sdd-apply',
+          commit: 'f6a7b8c',
+          subtasks: [
+            { id: 'ST3-1', title: 'Event delegation en contenedor de fases', status: 'completed', done: true },
+            { id: 'ST3-2', title: 'Aislamiento de toggle individual', status: 'completed', done: true }
+          ]
+        },
+        {
+          id: 'T3-02',
+          title: 'Toolbar de filtrado múltiple (texto, estado, responsable, tag, fase)',
+          status: 'completed',
+          tag: 'UI',
+          note: 'Filtrado AND unificado en lista y tablero Kanban con contadores reactivos.',
+          owner: 'sdd-apply',
+          commit: 'a7b8c9d'
+        },
+        {
+          id: 'T3-03',
+          title: 'Barra de progreso por fase y checklist visual de subtareas',
+          status: 'completed',
+          tag: 'UI',
+          note: 'Checklists enriquecidos, barras de progreso dinámicas y visualización de bloqueos.',
+          owner: 'sdd-apply',
+          commit: 'b8c9d0e',
+          subtasks: [
+            { id: 'ST3-3a', title: 'Cálculo de progreso por subtarea', status: 'completed', done: true },
+            { id: 'ST3-3b', title: 'Checklist visual interactivo', status: 'completed', done: true },
+            { id: 'ST3-3c', title: 'Animaciones de transición y badges', status: 'completed', done: true }
+          ]
+        },
+        {
+          id: 'T3-04',
+          title: 'Hardening de seguridad y prueba de escape hostil \\u003c/script\\u003e',
+          status: 'completed',
+          tag: 'Security',
+          note: 'Protección rigurosa contra inyección XSS y preservación de cadenas hostiles.',
+          owner: 'sdd-review',
+          commit: 'c9d0e1f',
+          risk: 'high',
+          blockedReason: 'Awaiting security review'
+        }
       ]
     },
     {
       id: 'phase-4',
       number: 4,
-      title: 'Paneles Opcionales',
-      status: 'in-progress',
-      target: 'Semana 4',
-      lead: 'DevOps',
+      title: 'Paneles Opcionales y Visualizaciones',
+      status: 'completed',
+      target: 'Fase 4',
+      lead: 'sdd-apply',
       tasks: [
-        { id: 'T4-01', title: 'Panel Git (flag-gated)', status: 'completed', tag: 'Git', note: 'Muestra rama y commits verbatim, sin fetch.', owner: 'DevOps', commit: 'b8c9d0e' },
-        { id: 'T4-02', title: 'Árbol de proyecto con indentación', status: 'in-progress', tag: 'Tree', note: 'Profundidad 0→0px, 1→14px, 2→28px', owner: 'DevOps', commit: '', risk: 'med' },
-        { id: 'T4-03', title: 'Codegraph SVG + leyenda', status: 'blocked', tag: 'Graph', note: 'Nodos y aristas, SVG 320px mínimo', owner: 'DevOps', commit: '', blockedReason: 'Waiting for graph source data' },
+        {
+          id: 'T4-01',
+          title: 'Panel Git Stream con historial de commits y estado de sincronización',
+          status: 'completed',
+          tag: 'Git',
+          note: 'Visualización de flujo git offline sin llamadas de red.',
+          owner: 'sdd-apply',
+          commit: 'd0e1f2a'
+        },
+        {
+          id: 'T4-02',
+          title: 'Árbol jerárquico de archivos con navegación e indentación',
+          status: 'completed',
+          tag: 'Tree',
+          note: 'Explorador de arquitectura y estructura del repositorio.',
+          owner: 'sdd-apply',
+          commit: 'e1f2a3b'
+        },
+        {
+          id: 'T4-03',
+          title: 'Mapa interactivo Codegraph SVG con diálogo accesible',
+          status: 'completed',
+          tag: 'Graph',
+          note: 'Grafo SVG de dependencias entre módulos con inspección semántica por nodo.',
+          owner: 'sdd-apply',
+          commit: 'f2a3b4c'
+        }
       ]
     },
     {
       id: 'phase-5',
       number: 5,
-      title: 'Ayuda y Documentación',
-      status: 'pending',
-      target: 'Semana 5',
-      lead: 'Docs',
+      title: 'Consola IA, Ayuda y Verificación Total',
+      status: 'completed',
+      target: 'Fase 5',
+      lead: 'sdd-verify',
       tasks: [
-        { id: 'T5-01', title: 'Todo scratchpad con prioridades P0/P1/P2', status: 'pending', tag: 'Docs', note: 'P0 rojo, P1 verde, P2 ámbar, done tachado.', owner: 'Docs', commit: '' },
-        { id: 'T5-02', title: 'Panel Ayuda con instrucciones para IA', status: 'pending', tag: 'Docs', note: 'Bloque AI-instructions con island-only, schemaVersion, escape.', owner: 'Docs', commit: '' },
+        {
+          id: 'T5-01',
+          title: 'Scratchpad de Tareas Rápidas (todos P0/P1/P2)',
+          status: 'completed',
+          tag: 'Docs',
+          note: 'Gestión de tareas de atención rápida con etiquetas prioritarias e indicadores de estado.',
+          owner: 'sdd-tasks',
+          commit: 'a3b4c5d'
+        },
+        {
+          id: 'T5-02',
+          title: 'Consola IA con Prompt Maestro Autónomo y selector de modelos',
+          status: 'completed',
+          tag: 'AI',
+          note: 'Generación guiada de comandos para asistentes LLM y auto-actualización del estado.',
+          owner: 'Orquestador',
+          commit: 'b4c5d6e'
+        },
+        {
+          id: 'T5-03',
+          title: 'Modal interactivo de bienvenida y suite de 136 pruebas e2e',
+          status: 'completed',
+          tag: 'QA',
+          note: 'Ventana emergente de bienvenida ¡ATENCIÓN!, checklist de portabilidad y pruebas 100% en verde.',
+          owner: 'sdd-verify',
+          commit: '2faddaa',
+          subtasks: [
+            { id: 'ST5-3a', title: 'Ventana emergente modal de bienvenida con ¡ATENCIÓN!', status: 'completed', done: true },
+            { id: 'ST5-3b', title: 'Suite de pruebas unitarias automatizadas (136 tests)', status: 'completed', done: true },
+            { id: 'ST5-3c', title: 'Validación Playwright e2e en navegador real con 9 viewports', status: 'completed', done: true }
+          ]
+        }
       ]
-    },
+    }
   ],
   todos: [
-    { id: 'td-1', text: 'Revisar tokens verbatim vs prototipo', priority: 'P0', done: false },
-    { id: 'td-2', text: 'Verificar file:// sin servidor', priority: 'P1', done: true },
-    { id: 'td-3', text: 'Probar hostile note con </script>', priority: 'P1', done: false },
-    { id: 'td-4', text: 'Documentar guía para vibe-coder', priority: 'P2', done: false },
+    { id: 'td-1', text: 'Verificar compatibilidad offline file:// sin servidor', priority: 'P0', done: true },
+    { id: 'td-2', text: 'Comprobar alternancia de formato de reloj 12H/24H', priority: 'P1', done: true },
+    { id: 'td-3', text: 'Validar pulso y cálculo de última actualización', priority: 'P1', done: true },
+    { id: 'td-4', text: 'Garantizar persistencia estricta en bloque tm-state', priority: 'P2', done: true }
   ],
   git: {
     branch: 'main',
     commits: [
-      { hash: 'a1b2c3d4e5f6', message: 'feat: esqueleto base + tokens' },
-      { hash: 'b2c3d4e5f6a7', message: 'feat: core parse/validate/derive' },
-      { hash: 'c3d4e5f6a7b8', message: 'feat: header + HUD dinámico' },
-      { hash: 'd4e5f6a7b8c9', message: 'feat: fases y filtros' },
+      { hash: '2faddaa', message: 'chore(release): 1.0.1' },
+      { hash: 'd193e1e', message: 'Merge pull request #2 from RamonsDka/fix/issue-1-portable-filename' },
+      { hash: '375dac5', message: 'fix: clarify portable filename in help prompt and docs' },
+      { hash: '4172efd', message: 'ci: update official GitHub actions' },
+      { hash: '1306233', message: 'ci: verify with Node.js 24' }
     ],
     syncStatus: 'Sincronizado'
   },
   tree: [
-    { name: 'drop-in-task-manager.html', depth: 0, type: 'file' },
+    { name: 'Task-Manager-Portable.html', depth: 0, type: 'file' },
     { name: 'modules/', depth: 0, type: 'dir' },
     { name: '01-skeleton.html', depth: 1, type: 'file' },
     { name: '02-core.js', depth: 1, type: 'file' },
@@ -138,17 +300,21 @@ const exampleState = {
     { name: '04-phases.js', depth: 1, type: 'file' },
     { name: '05-panels.js', depth: 1, type: 'file' },
     { name: '06-todo-help.js', depth: 1, type: 'file' },
+    { name: 'scripts/', depth: 0, type: 'dir' },
+    { name: 'assemble.mjs', depth: 1, type: 'file' },
+    { name: 'run-tests.mjs', depth: 1, type: 'file' },
+    { name: 'scan-portability.mjs', depth: 1, type: 'file' },
     { name: 'tests/', depth: 0, type: 'dir' },
-    { name: 'openspec/', depth: 0, type: 'dir' },
+    { name: 'docs/', depth: 0, type: 'dir' }
   ],
   codegraph: {
     nodes: [
-      { id: 'skeleton', label: 'Skeleton' },
-      { id: 'core', label: 'Core', files: ['modules/02-core.js'], taskIds: ['T2-01'], details: 'Parsea y valida el estado.' },
-      { id: 'hud', label: 'HUD' },
-      { id: 'phases', label: 'Phases' },
-      { id: 'panels', label: 'Panels' },
-      { id: 'help', label: 'Help' },
+      { id: 'skeleton', label: 'Skeleton', files: ['modules/01-skeleton.html'], details: 'Estructura HTML5 base, tokens y shells.' },
+      { id: 'core', label: 'Core', files: ['modules/02-core.js'], taskIds: ['T2-01'], details: 'Parsea, valida y deriva métricas del estado.' },
+      { id: 'hud', label: 'HUD & Clock', files: ['modules/03-header-hud.js'], taskIds: ['T2-02', 'T2-03'], details: 'Header, reloj digital, fecha, última act. y métricas.' },
+      { id: 'phases', label: 'Phases & Kanban', files: ['modules/04-phases.js'], taskIds: ['T3-01', 'T3-03'], details: 'Acordeón de fases, tareas, subtareas y Kanban.' },
+      { id: 'panels', label: 'Panels', files: ['modules/05-panels.js'], taskIds: ['T4-01', 'T4-02', 'T4-03'], details: 'Git stream, árbol de archivos y Codegraph SVG.' },
+      { id: 'help', label: 'AI Console & Help', files: ['modules/06-todo-help.js'], taskIds: ['T5-01', 'T5-02', 'T5-03'], details: 'Tareas rápidas, consola IA, prompts y bienvenida.' }
     ],
     edges: [
       { from: 'skeleton', to: 'core' },
@@ -156,7 +322,7 @@ const exampleState = {
       { from: 'core', to: 'phases' },
       { from: 'core', to: 'panels', label: 'usa', details: 'Panels consume los helpers de Core.' },
       { from: 'core', to: 'help' },
-      { from: 'phases', to: 'panels' },
+      { from: 'phases', to: 'panels' }
     ]
   }
 };
@@ -275,24 +441,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Add header comment — avoid literal <script> inside comment to keep island scan clean
   const headerComment = `<!--
-  Drop-In Task Manager — Single-file, file:// compatible, zero runtime deps
+  Task Manager Portable — Single-file, file:// compatible, zero runtime deps
   Generated deterministically by scripts/assemble.mjs
   Source modules: 01-skeleton.html + 02-core.js + 03-header-hud.js + 04-phases.js + 05-panels.js + 06-todo-help.js
   Island: script#tm-state (type=application/json) — AI edits ONLY this block
-  Docs: openspec/changes/drop-in-task-manager/ + Help tab (?)
-  Tokens: verbatim from project-tracking-dashboard/index.html
+  Tokens: verbatim dark theme
 -->
 `;
   html = html.replace('<!DOCTYPE html>', '<!DOCTYPE html>\n' + headerComment);
 
-  mkdirSync(path.dirname(distPath), { recursive: true });
-  writeFileSync(outPath, html, 'utf-8');
-  writeFileSync(distPath, html, 'utf-8');
   writeFileSync(portablePath, html, 'utf-8');
 
-  const stats = statSync(outPath);
+  const stats = statSync(portablePath);
   const sizeKB = (stats.size / 1024).toFixed(1);
-  console.log(`✅ Assembled root + dist + portable HTML — ${stats.size} bytes (${sizeKB} KB)`);
+  console.log(`✅ Assembled Task-Manager-Portable.html — ${stats.size} bytes (${sizeKB} KB)`);
   console.log(`   Modules: 01-skeleton + 02-core + 03-header-hud + 04-phases + 05-panels + 06-todo-help + bootstrap`);
   console.log(`   Island: exampleState (${exampleState.phases.length} phases, ${exampleState.phases.reduce((a,p)=>a+p.tasks.length,0)} tasks, ${exampleState.todos.length} todos)`);
   console.log(`   Features: git=${exampleState.meta.features.git} tree=${exampleState.meta.features.tree} codegraph=${exampleState.meta.features.codegraph}`);

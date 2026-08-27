@@ -481,3 +481,109 @@ describe('header-hud — accessible metric details', () => {
     assert.equal(document.getElementById('overview-detail-dialog').dataset.open, 'true');
   });
 });
+
+describe('header-hud — digital clock and last update cockpit hub', () => {
+  it('renders digital clock with hours, minutes, seconds, period, date and timezone', () => {
+    const state = createState();
+    const { document, hud } = mountWithState(state);
+    hud.renderHeader(state, document);
+
+    const clock = document.getElementById('tm-digital-clock');
+    assert.notEqual(clock, null, 'digital clock card must exist');
+    assert.equal(clock.getAttribute('role'), 'timer');
+
+    const hoursEl = document.getElementById('clock-hours');
+    const minEl = document.getElementById('clock-minutes');
+    const secEl = document.getElementById('clock-seconds');
+    const dateEl = document.getElementById('clock-date');
+    const tzEl = document.getElementById('clock-timezone');
+    const periodEl = document.getElementById('clock-period');
+
+    assert.notEqual(hoursEl, null);
+    assert.notEqual(minEl, null);
+    assert.notEqual(secEl, null);
+    assert.notEqual(dateEl, null);
+    assert.notEqual(tzEl, null);
+    assert.notEqual(periodEl, null);
+
+    assert.match(hoursEl.textContent, /^\d{2}$/);
+    assert.match(minEl.textContent, /^\d{2}$/);
+    assert.match(secEl.textContent, /^\d{2}$/);
+    assert.ok(dateEl.textContent.length > 0);
+    assert.ok(tzEl.textContent.length > 0);
+  });
+
+  it('toggles clock between 12-hour and 24-hour formats on switcher click', () => {
+    const state = createState();
+    const { document, hud } = mountWithState(state);
+    hud.renderHeader(state, document);
+
+    const clock = document.getElementById('tm-digital-clock');
+    const toggleBtn = document.getElementById('btn-clock-toggle-format');
+    const formatTag = document.getElementById('clock-format-tag');
+    const periodEl = document.getElementById('clock-period');
+
+    assert.equal(clock.getAttribute('data-clock-format'), '12h');
+    assert.equal(formatTag.textContent, '12H');
+    assert.equal(periodEl.style.display !== 'none', true);
+
+    // Click to switch to 24h
+    toggleBtn.click();
+    assert.equal(clock.getAttribute('data-clock-format'), '24h');
+    assert.equal(formatTag.textContent, '24H');
+    assert.equal(periodEl.style.display, 'none');
+
+    // Click again to switch back to 12h
+    toggleBtn.click();
+    assert.equal(clock.getAttribute('data-clock-format'), '12h');
+    assert.equal(formatTag.textContent, '12H');
+  });
+
+  it('renders last update card from meta timestamp or history', () => {
+    const state = createState({
+      meta: {
+        lastUpdated: '2026-08-26T14:30:00Z',
+        history: [{ timestamp: '2026-08-26T14:30:00Z', completed: 2, total: 5 }]
+      }
+    });
+    const { document, hud } = mountWithState(state);
+    hud.renderHeader(state, document);
+
+    const lastUpdateCard = document.getElementById('tm-last-update');
+    assert.notEqual(lastUpdateCard, null, 'last update card must exist');
+    assert.equal(lastUpdateCard.getAttribute('role'), 'status');
+
+    const relEl = document.getElementById('last-update-relative');
+    const exactEl = document.getElementById('last-update-exact');
+
+    assert.notEqual(relEl, null);
+    assert.notEqual(exactEl, null);
+    assert.ok(relEl.textContent.length > 0);
+    assert.ok(exactEl.textContent.length > 0);
+  });
+
+  it('renders active harness card and updated project logo svg', () => {
+    const state = createState({
+      meta: {
+        harness: 'OpenCode',
+        harnessRole: 'Autonomous Multi-Agent Runtime'
+      }
+    });
+    const { document, hud } = mountWithState(state);
+    hud.renderHeader(state, document);
+
+    const harnessCard = document.getElementById('tm-harness-card');
+    assert.notEqual(harnessCard, null, 'harness card must exist');
+    assert.equal(harnessCard.getAttribute('role'), 'status');
+
+    const harnessName = document.getElementById('harness-name');
+    const harnessRole = document.getElementById('harness-role');
+    assert.notEqual(harnessName, null);
+    assert.equal(harnessName.textContent, 'OpenCode');
+    assert.equal(harnessRole.textContent, 'Autonomous Multi-Agent Runtime');
+
+    const logo = document.getElementById('project-logo-icon');
+    assert.notEqual(logo, null, 'project logo icon must exist');
+    assert.equal(logo.querySelector('svg') !== null, true, 'logo must contain svg');
+  });
+});

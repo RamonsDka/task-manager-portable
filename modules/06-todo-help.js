@@ -142,11 +142,102 @@
     if (exportButton) exportButton.addEventListener('click', function () { var ok = exportState(doc, snapshot.parsed || state, text); setFeedback(mount, '[data-state-export-feedback]', ok ? 'Exported' : 'Export failed', !ok); });
   }
 
+  function openTodoDetailDialog(todo, doc, triggerEl) {
+    var dialog = doc.getElementById('todo-detail-dialog');
+    if (!dialog || !todo) return;
+
+    var priority = todo.priority || 'P2';
+    var pClass = priorityBadgeClass(priority);
+    var pLabel = priorityLabel(priority);
+    var isDone = !!todo.done;
+
+    var idEl = dialog.querySelector('#todo-detail-id');
+    var pBadge = dialog.querySelector('#todo-detail-priority-badge');
+    var sBadge = dialog.querySelector('#todo-detail-status-badge');
+    var titleEl = dialog.querySelector('#todo-detail-title');
+    var pLevelEl = dialog.querySelector('#todo-detail-p-level');
+    var stateTextEl = dialog.querySelector('#todo-detail-state-text');
+    var actionBox = dialog.querySelector('#todo-detail-action-guidance');
+
+    if (idEl) idEl.textContent = todo.id || 'td';
+    if (pBadge) {
+      pBadge.className = 'badge ' + pClass;
+      pBadge.textContent = pLabel;
+    }
+    if (sBadge) {
+      sBadge.textContent = isDone ? 'Completada / Verificada' : 'Pendiente / Activa';
+      sBadge.className = 'badge ' + (isDone ? 'badge-completed' : 'badge-pending');
+    }
+    if (titleEl) titleEl.textContent = todo.text || 'Señal de Atención';
+    if (pLevelEl) {
+      pLevelEl.textContent = priority === 'P0' ? 'P0 (Crítico / Bloqueante)' : priority === 'P1' ? 'P1 (Prioridad Alta)' : 'P2 (Prioridad Normal / Rutina)';
+    }
+    if (stateTextEl) {
+      stateTextEl.textContent = isDone ? '✓ Verificada y cumplida en el estado del proyecto' : '⏳ Pendiente de cumplimiento / revisión requerida';
+    }
+    if (actionBox) {
+      var advice = '';
+      if (priority === 'P0') {
+        advice = '🚨 Nivel Crítico: Esta señal representa un requisito indispensable de portabilidad o arquitectura. El orquestador debe resolverla antes de proceder a la siguiente fase.';
+      } else if (priority === 'P1') {
+        advice = '⚡ Prioridad Alta: Verificar funcionalidad clave e interactividad (reloj, filtros, sincronización) asegurando que no se rompan las pruebas.';
+      } else {
+        advice = '📌 Prioridad Normal: Mantener coherencia en el bloque JSON #tm-state y actualizar progresivamente según avances.';
+      }
+      actionBox.textContent = advice;
+    }
+
+    dialog._trigger = triggerEl;
+    dialog.dataset.open = 'true';
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+
+    var closeBtn = dialog.querySelector('[data-todo-close]');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeTodoDetailDialog(doc) {
+    var dialog = doc && doc.getElementById('todo-detail-dialog');
+    if (!dialog) return;
+    if (typeof dialog.close === 'function') dialog.close();
+    dialog.removeAttribute('open');
+    dialog.dataset.open = 'false';
+    if (dialog._trigger && typeof dialog._trigger.focus === 'function') dialog._trigger.focus();
+  }
+
+  function bindTodoDialogControls(doc) {
+    var dialog = doc && doc.getElementById('todo-detail-dialog');
+    if (!dialog || dialog.getAttribute('data-todo-dialog-bound') === '1') return;
+    dialog.setAttribute('data-todo-dialog-bound', '1');
+
+    dialog.querySelectorAll('[data-todo-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () { closeTodoDetailDialog(doc); });
+    });
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) closeTodoDetailDialog(doc);
+    });
+    dialog.addEventListener('cancel', function (event) {
+      event.preventDefault();
+      closeTodoDetailDialog(doc);
+    });
+    dialog.addEventListener('keydown', function (event) {
+      if (event.key !== 'Tab' || dialog.dataset.open !== 'true') return;
+      var focusables = Array.prototype.slice.call(dialog.querySelectorAll('button, [href], [tabindex]')).filter(function (item) { return !item.hidden && !item.disabled && item.getAttribute('tabindex') !== '-1'; });
+      if (!focusables.length) return;
+      event.preventDefault();
+      var index = focusables.indexOf(doc.activeElement);
+      var next = event.shiftKey ? (index <= 0 ? focusables.length - 1 : index - 1) : (index === -1 || index === focusables.length - 1 ? 0 : index + 1);
+      focusables[next].focus();
+    });
+  }
+
   function renderTodo(state, doc) {
     doc = doc || (typeof document !== 'undefined' ? document : null);
     if (!doc) return;
     var container = doc.getElementById('todo-items-container') || doc.querySelector('.todo-list');
     if (!container) return;
+
+    bindTodoDialogControls(doc);
 
     var todos = (state && Array.isArray(state.todos)) ? state.todos : [];
 
@@ -157,7 +248,7 @@
     }
 
     if (todos.length === 0) {
-      container.innerHTML = '<div class="informational-empty">Sin señales de atención registradas</div>';
+      container.innerHTML = '<div class=\"informational-empty\">Sin señales de atención registradas</div>';
       return;
     }
 
@@ -171,7 +262,7 @@
       var badgeCls = priorityBadgeClass(priority);
       var pLabel = esc(priorityLabel(priority));
 
-      html += '<div class="todo-item' + (done ? ' done' : '') + '" data-id="' + id + '">'
+      html += '<div class="todo-item' + (done ? ' done' : '') + '" role="button" tabindex="0" aria-haspopup="dialog" data-id="' + id + '" data-priority="' + priority + '" data-done="' + (done ? '1' : '0') + '" title="Clic para ver detalles y recomendaciones de esta señal">'
         + '<div class="todo-left">'
         + '<span class="todo-text">' + text + '</span>'
         + '</div>'
@@ -182,6 +273,139 @@
         + '</div>';
     }
     container.innerHTML = html;
+
+    if (container.getAttribute('data-todo-bound') !== '1') {
+      container.setAttribute('data-todo-bound', '1');
+      container.addEventListener('click', function (event) {
+        var item = event.target.closest('.todo-item');
+        if (!item || !container.contains(item)) return;
+        var id = item.getAttribute('data-id');
+        var matched = todos.find(function (t) { return t && (t.id === id || String(t.id) === id); });
+        if (matched) openTodoDetailDialog(matched, doc, item);
+      });
+      container.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          var item = event.target.closest('.todo-item');
+          if (item && container.contains(item)) {
+            event.preventDefault();
+            var id = item.getAttribute('data-id');
+            var matched = todos.find(function (t) { return t && (t.id === id || String(t.id) === id); });
+            if (matched) openTodoDetailDialog(matched, doc, item);
+          }
+        }
+      });
+    }
+  }
+
+  function getMasterPrompt() {
+    return 'Usa la skill task-tracker-manager.\n\n'
+      + 'Mantén actualizado el archivo ./Task-Manager-Portable.html según avances en el proyecto. Si en el repositorio ya existe ./drop-in-task-manager.html, mantén ese archivo existente. NUNCA crees un archivo HTML nuevo con otro nombre.\n\n'
+      + 'MODO AUTÓNOMO (NO HAGAS PREGUNTAS AL USUARIO):\n'
+      + '1. Autodescubrimiento:\n'
+      + '   - Detecta el nombre del proyecto desde package.json, git remote o el nombre del directorio raíz.\n'
+      + '   - Analiza el código y los planes actuales para estructurar o actualizar fases, tareas y sub-tareas.\n'
+      + '2. Delegación y Subagente (Recomendado):\n'
+      + '   - Si tu entorno soporta subagentes o workers (ej: OpenCode Task, Claude Code agents, sub-workers), puedes delegar la edición de este HTML a un subagente con un modelo rápido o económico.\n'
+      + '   - El agente principal solo debe indicarle al subagente: la tarea completada, la próxima tarea y los cambios de estado en las tareas/subtareas.\n'
+      + '3. Reglas Técnicas Obligatorias:\n'
+      + '   - Edita ÚNICAMENTE el bloque \\x3cscript type="application/json" id="tm-state">. NUNCA toques el HTML ni scripts fuera de esa etiqueta.\n'
+      + '   - Mantén schemaVersion: "1.0".\n'
+      + '   - Escapa </script> dentro de strings como \\u003c/script\\u003e.\n'
+      + '   - Usa solo status: pending | in-progress | completed | blocked (desconocidos → pending).\n'
+      + '   - Soporta sub-tareas en tareas con: "subtasks": [{"id": "ST1", "title": "...", "status": "completed"|"in-progress"|"pending"|"blocked"}].\n'
+      + '   - No uses fetch, XHR, import ni leas .git en runtime.\n'
+      + '   - No hardcodees overallPct — se deriva automáticamente en la interfaz.\n\n'
+      + 'Cada vez que completes una tarea o iteración, actualiza las fases/tareas/subtareas en el JSON island, guarda el archivo y confirma brevemente el nuevo progreso (ej: 9/14 tareas → 64%).';
+  }
+
+  function dismissWelcome(doc, dialog) {
+    if (!dialog) return;
+    if (typeof dialog.close === 'function') dialog.close();
+    dialog.removeAttribute('open');
+    dialog.dataset.open = 'false';
+    if (doc) doc.__tmWelcomeSeen = true;
+    var win = doc && doc.defaultView || (typeof window !== 'undefined' ? window : null);
+    if (win) {
+      try { if (win.sessionStorage) win.sessionStorage.setItem('tm-welcome-dismissed', '1'); } catch (_) {}
+    }
+  }
+
+  function isWelcomeSeen(doc) {
+    if (doc && doc.__tmWelcomeSeen) return true;
+    var win = doc && doc.defaultView || (typeof window !== 'undefined' ? window : null);
+    if (!win) return false;
+    try {
+      if (win.sessionStorage && win.sessionStorage.getItem('tm-welcome-dismissed') === '1') return true;
+    } catch (_) {}
+    return false;
+  }
+
+  function initWelcomeModal(doc) {
+    doc = doc || (typeof document !== 'undefined' ? document : null);
+    if (!doc) return;
+    var dialog = doc.getElementById('welcome-dialog');
+    if (!dialog) return;
+
+    var promptPre = dialog.querySelector('[data-welcome-prompt]');
+    if (promptPre) {
+      promptPre.textContent = getMasterPrompt();
+    }
+
+    var copyBtn = dialog.querySelector('[data-copy-welcome-prompt]');
+    var feedback = dialog.querySelector('[data-copy-welcome-feedback]');
+    if (copyBtn && copyBtn.getAttribute('data-welcome-bound') !== '1') {
+      copyBtn.setAttribute('data-welcome-bound', '1');
+      copyBtn.addEventListener('click', function () {
+        var text = promptPre ? promptPre.textContent : getMasterPrompt();
+        copyText(doc, text, function (ok) {
+          if (ok) {
+            if (feedback) { feedback.textContent = '¡Copiado con éxito!'; feedback.style.display = 'inline'; }
+            copyBtn.textContent = '✓ Copiado al portapapeles!';
+            setTimeout(function () {
+              if (feedback) feedback.style.display = 'none';
+              copyBtn.textContent = '📋 Copiar Prompt Maestro';
+            }, 2000);
+          } else {
+            if (feedback) { feedback.textContent = 'Selecciona y copia el texto manualmente.'; feedback.style.display = 'inline'; }
+          }
+        });
+      });
+    }
+
+    var closeButtons = dialog.querySelectorAll('[data-welcome-close]');
+    closeButtons.forEach(function (btn) {
+      if (btn.getAttribute('data-welcome-bound') !== '1') {
+        btn.setAttribute('data-welcome-bound', '1');
+        btn.addEventListener('click', function () {
+          dismissWelcome(doc, dialog);
+        });
+      }
+    });
+
+    if (dialog.getAttribute('data-backdrop-bound') !== '1') {
+      dialog.setAttribute('data-backdrop-bound', '1');
+      dialog.addEventListener('click', function (event) {
+        if (event.target === dialog) {
+          dismissWelcome(doc, dialog);
+        }
+      });
+    }
+
+    if (!isWelcomeSeen(doc) && dialog.getAttribute('data-welcome-auto-opened') !== '1') {
+      dialog.setAttribute('data-welcome-auto-opened', '1');
+      try {
+        if (typeof dialog.showModal === 'function') {
+          dialog.showModal();
+          dialog.dataset.open = 'true';
+        } else {
+          dialog.setAttribute('open', '');
+          dialog.dataset.open = 'true';
+        }
+      } catch (_) {
+        dialog.setAttribute('open', '');
+        dialog.dataset.open = 'true';
+      }
+    }
   }
 
   function renderHelp(state, doc, validation) {
@@ -253,11 +477,11 @@
       + '</div>'
 
       + '<div id="prompt-inicial" style="background:#12161d;border:1px solid #3fb950;border-radius:8px;padding:12px;margin-top:12px;">'
-      + '<h4 style="color:#3fb950;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">📋 Prompt inicial para la IA — Copiar y pegar</h4>'
-      + '<p style="font-size:12px;color:#8b949e;margin-bottom:8px;">Copia este prompt y envíaselo a tu IA orquestadora al iniciar cada sesión. Reemplaza los <code>[...]</code> con tu contexto:</p>'
-       + '<pre id="initial-prompt-text" data-help-prompt style="font-family:var(--font-mono);font-size:11px;color:#c9d1d9;background:#0b0e14;padding:10px;border-radius:6px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;border:1px solid #30363d;line-height:1.5;max-height:280px;overflow-y:auto;">Usa la skill task-tracker-manager.\n\nMantén actualizado el archivo ./Task-Manager-Portable.html según avances en el proyecto.\n\nReglas obligatorias:\n- Edita SOLO el bloque &lt;script type=&quot;application/json&quot; id=&quot;tm-state&quot;&gt;\n- Mantén schemaVersion: &quot;1.0&quot;\n- Escapa &lt;/script&gt; como \\u003c/script\\u003e\n- Usa solo status: pending | in-progress | completed | blocked (desconocidos → pending)\n- No uses fetch, XHR, import ni leas .git en runtime\n- No hardcodees overallPct — se deriva automáticamente\n\nContexto actual:\n- Proyecto: [nombre del proyecto]\n- Tarea completada: [describe qué hiciste]\n- Próxima tarea: [qué sigue]\n\nActualiza las fases/tareas correspondientes, guarda el archivo y dime el nuevo progreso global (ej: 8/14 → 57%).</pre>'
-       + '<button id="btn-copy-prompt" data-copy-prompt type="button" style="margin-top:8px;background:#238636;border:1px solid #3fb950;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;">📋 Copiar prompt</button>'
-       + '<span id="copy-feedback" data-copy-prompt-feedback role="status" aria-live="polite" style="margin-left:8px;font-size:12px;color:#3fb950;display:none;"></span>'
+      + '<h4 style="color:#3fb950;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">📋 Prompt Maestro para la IA — Copiar y pegar</h4>'
+      + '<p style="font-size:12px;color:#8b949e;margin-bottom:8px;">Copia este prompt y envíaselo a tu IA orquestadora al iniciar cada sesión. La IA trabajará de forma autónoma sin hacer preguntas innecesarias:</p>'
+      + '<pre id="initial-prompt-text" data-help-prompt style="font-family:var(--font-mono);font-size:11px;color:#c9d1d9;background:#0b0e14;padding:10px;border-radius:6px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;border:1px solid #30363d;line-height:1.5;max-height:280px;overflow-y:auto;">' + esc(getMasterPrompt()) + '</pre>'
+      + '<button id="btn-copy-prompt" data-copy-prompt type="button" style="margin-top:8px;background:#238636;border:1px solid #3fb950;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;">📋 Copiar prompt</button>'
+      + '<span id="copy-feedback" data-copy-prompt-feedback role="status" aria-live="polite" style="margin-left:8px;font-size:12px;color:#3fb950;display:none;"></span>'
       + '</div>'
 
       + '<aside class="help-portability-note" aria-label="Portabilidad y documentación"><span class="help-portability-icon">i</span><div><strong>Referencia técnica local</strong><p>Documentación: <code>openspec/changes/drop-in-task-manager/</code></p><div class="help-portability-tags"><span>Tokens del prototipo</span><span><code>file://</code> compatible</span><span>Sin dependencias externas</span></div></div></aside>';
@@ -299,6 +523,7 @@
   function renderAllTodoHelp(state, doc, validation) {
     renderTodo(state, doc);
     renderHelp(state, doc, validation);
+    initWelcomeModal(doc);
   }
 
   var TMTodoHelp = {
@@ -307,7 +532,9 @@
     renderAllTodoHelp: renderAllTodoHelp,
     renderStateTools: renderStateTools,
     copyText: copyText,
-    exportState: exportState
+    exportState: exportState,
+    getMasterPrompt: getMasterPrompt,
+    initWelcomeModal: initWelcomeModal
   };
 
   try { if (typeof window !== 'undefined') window.TMTodoHelp = TMTodoHelp; } catch (_) {}

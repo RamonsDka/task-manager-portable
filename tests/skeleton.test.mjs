@@ -130,14 +130,21 @@ describe('skeleton shell — file:// portability & tokens', () => {
     assert.equal(jsonText.includes('</script>'), false, 'island must not contain raw </script> (must be \\u003c)');
   });
 
-  it('provides one accessible native Codegraph dialog shell with a reachable close control', () => {
+  it('provides accessible native Codegraph, Overview detail, and Welcome dialog shells', () => {
     const window = new Window({ url: 'http://localhost/' });
     window.document.write(readSkeleton());
     window.document.close();
-    const dialog = window.document.getElementById('codegraph-dialog');
-    assert.equal(dialog.tagName, 'DIALOG');
-    assert.notEqual(window.document.getElementById(dialog.getAttribute('aria-labelledby')), null);
-    assert.notEqual(dialog.querySelector('[data-codegraph-close]'), null);
+    const codegraphDialog = window.document.getElementById('codegraph-dialog');
+    assert.equal(codegraphDialog.tagName, 'DIALOG');
+    assert.notEqual(window.document.getElementById(codegraphDialog.getAttribute('aria-labelledby')), null);
+    assert.notEqual(codegraphDialog.querySelector('[data-codegraph-close]'), null);
+
+    const welcomeDialog = window.document.getElementById('welcome-dialog');
+    assert.notEqual(welcomeDialog, null, 'welcome-dialog must exist');
+    assert.equal(welcomeDialog.tagName, 'DIALOG');
+    assert.notEqual(window.document.getElementById(welcomeDialog.getAttribute('aria-labelledby')), null);
+    assert.notEqual(welcomeDialog.querySelector('[data-welcome-close]'), null);
+    assert.notEqual(welcomeDialog.querySelector('[data-copy-welcome-prompt]'), null);
   });
 
   it('has no logic script tags — only island JSON (no fetch/import/XHR/classic logic yet)', () => {
@@ -235,7 +242,7 @@ describe('skeleton shell — file:// portability & tokens', () => {
     assert.equal(/<script[^>]+src=/i.test(withoutComments), false, 'must not have <script src=');
 
     // Happy-dom mount must not throw and must preserve dark theme
-    const window = new Window({ url: 'file:///drop-in-task-manager.html' });
+    const window = new Window({ url: 'file:///Task-Manager-Portable.html' });
     const document = window.document;
     assert.doesNotThrow(() => {
       document.write(html);

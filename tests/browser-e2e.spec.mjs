@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const artifactUrl = pathToFileURL(path.join(projectRoot, 'drop-in-task-manager.html')).href;
+const artifactUrl = pathToFileURL(path.join(projectRoot, 'Task-Manager-Portable.html')).href;
 const viewports = [
   { width: 320, height: 568 }, { width: 375, height: 812 }, { width: 390, height: 844 },
   { width: 414, height: 896 }, { width: 768, height: 1024 }, { width: 1024, height: 768 },
@@ -39,6 +39,14 @@ test('fixed offline artifact preserves boundaries and browser behavior', async (
   await page.goto(artifactUrl, { waitUntil: 'load' });
   await expect(page).toHaveURL(artifactUrl);
   assert.deepEqual(blockedUrls, ['https://example.invalid/']);
+
+  const welcomeDialog = page.locator('#welcome-dialog');
+  if (await welcomeDialog.isVisible()) {
+    await expect(page.locator('#welcome-dialog-title')).toBeVisible();
+    await expect(page.locator('[data-welcome-prompt]')).toBeVisible();
+    await page.locator('[data-welcome-close]').first().click();
+    await expect(welcomeDialog).not.toBeVisible();
+  }
 
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
@@ -128,7 +136,68 @@ test('fixed offline artifact preserves boundaries and browser behavior', async (
   assert.equal(keys.includes('tm-ui-preferences'), false, 'file:// uses in-memory preferences to avoid opaque-origin storage access');
   await page.reload({ waitUntil: 'load' });
   assert.equal(await page.evaluate(() => localStorage.getItem('tm-ui-preferences')), null);
+  if (await welcomeDialog.isVisible()) {
+    await page.locator('[data-welcome-close]').first().click();
+    await expect(welcomeDialog).not.toBeVisible();
+  }
   await page.locator('#tab-btn-overview').click();
+  const clock = page.locator('#tm-digital-clock');
+  await expect(clock).toBeVisible();
+  await expect(page.locator('#clock-hours')).toHaveText(/^\d{2}$/);
+  await expect(page.locator('#clock-minutes')).toHaveText(/^\d{2}$/);
+  await expect(page.locator('#clock-seconds')).toHaveText(/^\d{2}$/);
+  await expect(page.locator('#tm-last-update')).toBeVisible();
+  await expect(page.locator('#tm-harness-card')).toBeVisible();
+  await expect(page.locator('#harness-name')).toHaveText('OpenCode');
+  await expect(page.locator('#project-logo-icon svg')).toBeVisible();
+
+  // Test 12h/24h toggle
+  const clockToggleBtn = page.locator('#btn-clock-toggle-format');
+  await expect(clockToggleBtn).toBeVisible();
+  await clockToggleBtn.click();
+  await expect(clock).toHaveAttribute('data-clock-format', '24h');
+  await expect(page.locator('#clock-format-tag')).toHaveText('24H');
+  await clockToggleBtn.click();
+  await expect(clock).toHaveAttribute('data-clock-format', '12h');
+  await expect(page.locator('#clock-format-tag')).toHaveText('12H');
+
+  // Test Señal de Atención (Todo) Dialog
+  const todoItem = page.locator('#todo-items-container .todo-item').first();
+  await todoItem.click();
+  const todoDialog = page.locator('#todo-detail-dialog');
+  await expect(todoDialog).toBeVisible();
+  await expect(page.locator('#todo-detail-desc')).toBeVisible();
+  await page.locator('[data-todo-close]').first().click();
+  await expect(todoDialog).not.toBeVisible();
+
+  // Test Task Detail Dialog in Phases
+  await page.keyboard.press('2');
+  const taskCard = page.locator('#phases-list .task-item').first();
+  await taskCard.click();
+  const taskDialog = page.locator('#task-detail-dialog');
+  await expect(taskDialog).toBeVisible();
+  await expect(page.locator('#task-detail-owner')).toHaveText(/sdd|Ana|Elena|Carlos|Luis/i);
+  await page.locator('[data-task-close]').first().click();
+  await expect(taskDialog).not.toBeVisible();
+
+  // Test Task Detail Dialog in Kanban
+  await page.keyboard.press('3');
+  const kanbanTask = page.locator('#kanban-board-mount .task-item').first();
+  await kanbanTask.click();
+  await expect(taskDialog).toBeVisible();
+  await page.locator('[data-task-close]').first().click();
+  await expect(taskDialog).not.toBeVisible();
+
+  // Test Git Detail Dialog
+  await page.keyboard.press('6');
+  const gitCard = page.locator('#full-git-mount .git-event-card').first();
+  await gitCard.click();
+  const gitDialog = page.locator('#git-detail-dialog');
+  await expect(gitDialog).toBeVisible();
+  await page.locator('[data-git-close]').first().click();
+  await expect(gitDialog).not.toBeVisible();
+
+  await page.keyboard.press('1');
   const metricIds = await page.locator('#metrics-overview > .metric-card').evaluateAll((cards) => cards.map((card) => card.id));
   assert.deepEqual(metricIds, ['metric-overview-risk', 'metric-overall-card', 'metric-current-focus', 'metric-distribution', 'metric-git', 'metric-phase-coverage', 'metric-active-workload', 'metric-data-coverage', 'metric-insights']);
   const metric = page.locator('#metric-overall-card');
